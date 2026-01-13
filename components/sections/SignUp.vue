@@ -140,7 +140,7 @@ const submitForm = async () => {
         <div class="flex justify-center mb-6">
           <div class="p-3 bg-white/5 rounded-2xl border border-white/10">
             <img
-              src="/FlexyDuit-flat-transparent.avif"
+              src="/mylendingsolution.png"
               alt="FlexyDuit"
               class="h-14 object-contain brightness-110"
             />
