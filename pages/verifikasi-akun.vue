@@ -96,7 +96,6 @@ const submitPersonalInformation = async () => {
   });
 
   const token = getCookie("token");
-  alert(token);
   try {
     const response = await fetch(
       "https://cms.mysolutionlending.com/api/v1/profile/anggota-details", // HAPUS ?_method=PUT
