@@ -127,30 +127,55 @@ const getPosition = (e: any) => {
 const submitForm = async (e: Event) => {
   e.preventDefault();
   if (!form.value.signature) return alert(t("loan.signature.note"));
+  
   isLoading.value = true;
   const token = getCookie("token");
+
   try {
     const loanData = new FormData();
+    
+    // Data Utama
     loanData.append("nominal", form.value.nominal.toString());
     loanData.append("tenor", form.value.tenor.toString());
     loanData.append("interest_rate", form.value.interest_rate.toString());
+    
+    // Tambahkan field kalkulasi yang diminta backend (PENTING)
+    loanData.append("monthly_principal", form.value.monthly_principal.toString());
+    loanData.append("monthly_interest", form.value.monthly_interest.toString());
+    loanData.append("monthly_amortization", form.value.monthly_amortization.toString());
+    loanData.append("monthly_payment", form.value.monthly_payment.toString());
+
+    // Signature
     if (form.value.signature) {
       const res = await fetch(form.value.signature);
       const blob = await res.blob();
       loanData.append("signature", blob, "signature.png");
     }
+    
     loanData.append("contract_checklist", agreedTerms.value ? "1" : "0");
 
     const response = await fetch("https://cms.mysolutionlending.com/api/v1/loans", {
       method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { 
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json" // Rekomendasi: tambahkan ini agar response selalu JSON
+      },
       body: loanData,
     });
-    if (!response.ok) throw new Error("Gagal hantar.");
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      // Jika ada error validasi dari Laravel, tampilkan pesannya
+      const errorMsg = result.message || "Gagal hantar permohonan.";
+      throw new Error(errorMsg);
+    }
+
     currentStep.value = 2;
     setTimeout(() => { window.location.href = "/wallet"; }, 5000);
-  } catch (error) {
-    alert("Ralat penghantaran.");
+  } catch (error: any) {
+    alert(error.message || "Ralat penghantaran.");
+    console.error("Submit Error:", error);
   } finally {
     isLoading.value = false;
   }

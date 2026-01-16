@@ -97,14 +97,14 @@ watchEffect(() => {
     // Signatures & Stamps Styling
     let signatureHtml = "";
     if (loans.value && loans.value.signature) {
-      const imageUrl = "https://cms.flexyduit.com" + loans.value.signature;
+      const imageUrl = "https://cms.mysolutionlending.com" + loans.value.signature;
       signatureHtml = `<img src="${imageUrl}" alt="Signature" style="max-width: 100px; height: auto; filter: brightness(1.1); margin: 10px 0;" />`;
     }
     agreementText = agreementText.replace(/\{signature\}/g, signatureHtml);
 
     let stampHtml = "";
     if (dataSettings.value && dataSettings.value.stamp) {
-      const imageUrl = "https://cms.flexyduit.com" + dataSettings.value.stamp;
+      const imageUrl = "https://cms.mysolutionlending.com" + dataSettings.value.stamp;
       stampHtml = `<img src="${imageUrl}" alt="Stamp" style="max-width: 100px; height: auto; margin: 10px 0;" />`;
     }
     agreementText = agreementText.replace(/\{stamp\}/g, stampHtml);

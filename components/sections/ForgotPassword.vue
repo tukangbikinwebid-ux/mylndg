@@ -93,7 +93,7 @@ const submitForm = async (event: Event) => {
           <div class="mb-8 inline-block p-4 bg-white/5 rounded-2xl border border-white/10 shadow-xl">
             <img
               v-if="settings?.logo"
-              :src="`https://cms.flexyduit.com${settings?.logo}`"
+              :src="`https://cms.mysolutionlending.com${settings?.logo}`"
               :alt="settings?.name"
               class="mx-auto h-12 w-auto brightness-110 object-contain"
             />

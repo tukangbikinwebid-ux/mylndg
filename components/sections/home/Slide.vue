@@ -45,7 +45,7 @@
                 :title="banner.title"
                 duration=""
                 href="#"
-                :cover-image="`https://cms.flexyduit.com${fixStoragePath(banner.image)}`"
+                :cover-image="`https://cms.mysolutionlending.com${fixStoragePath(banner.image)}`"
               />
               <div class="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#0A052E] via-transparent to-transparent opacity-60"></div>
             </div>
