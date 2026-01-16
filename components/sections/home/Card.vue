@@ -206,7 +206,7 @@ onBeforeUnmount(() => {
             class="flex justify-center p-4 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/[0.05] transition-all group"
           >
             <img
-              :src="`https://cms.mysolutionlending.com${partner.image}`"
+              :src="`${partner.image}`"
               class="h-10 md:h-12 w-auto object-contain filter group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500"
               alt="Partner Logo"
             />

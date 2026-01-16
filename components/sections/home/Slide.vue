@@ -45,7 +45,7 @@
                 :title="banner.title"
                 duration=""
                 href="#"
-                :cover-image="`https://cms.mysolutionlending.com${fixStoragePath(banner.image)}`"
+                :cover-image="`${banner.image}`"
               />
               <div class="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#0A052E] via-transparent to-transparent opacity-60"></div>
             </div>
@@ -98,13 +98,6 @@ const fetchLoan = async () => {
   }
 };
 
-const fixStoragePath = (path: string | null) => {
-  if (!path) return "";
-  return path.startsWith('/storage/') 
-    ? path.replace('/storage/', '/storage/app/public/') 
-    : path;
-};
-
 onMounted(async () => {
   await fetchLoan();
   settings.value = await getSetting();
@@ -114,7 +107,7 @@ onMounted(async () => {
 const homeBackgroundStyle = computed(() => {
   if (settings.value?.background_home) {
     return {
-      backgroundImage: `url('https://cms.mysolutionlending.com/${settings.value.background_home}')`,
+      backgroundImage: `url('${settings.value.background_home}')`,
       backgroundSize: 'cover'
     };
   }
