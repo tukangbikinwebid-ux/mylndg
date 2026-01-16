@@ -91,16 +91,139 @@ function formatDate(dateString: any): string {
   return `${date.toLocaleDateString("en-MY", dateOptions)} ${date.toLocaleTimeString("en-GB", timeOptions)}`;
 }
 
-watchEffect(() => {
-  if (dataSettings.value?.loan_agreement) {
-    let agreementText = dataSettings.value.loan_agreement;
-    // ... Logic replacement tetap sama ...
-    if (users.value?.name) agreementText = agreementText.replace(/\{name\}/g, users.value.name);
-    if (loans.value?.reference) agreementText = agreementText.replace(/\{reference\}/g, loans.value.reference);
-    if (loans.value?.nominal !== undefined) agreementText = agreementText.replace(/\{nominal\}/g, "RM " + loans.value.nominal.toLocaleString("en-MY"));
-    // (Lanjutkan replacement lainnya sesuai kebutuhan)
+// watchEffect(() => {
+//   if (dataSettings.value?.loan_agreement) {
+//     let agreementText = dataSettings.value.loan_agreement;
+//     // ... Logic replacement tetap sama ...
+//     if (users.value?.name) agreementText = agreementText.replace(/\{name\}/g, users.value.name);
+//     if (loans.value?.reference) agreementText = agreementText.replace(/\{reference\}/g, loans.value.reference);
+//     if (loans.value?.nominal !== undefined) agreementText = agreementText.replace(/\{nominal\}/g, "RM " + loans.value.nominal.toLocaleString("en-MY"));
+
+//     // (Lanjutkan replacement lainnya sesuai kebutuhan)
     
-    dataSettings.value.loan_agreement = agreementText;
+//     dataSettings.value.loan_agreement = agreementText;
+//   }
+// });
+
+watchEffect(() => {
+  if (dataSettings.value && dataSettings.value.loan_agreement) {
+    let agreementText = dataSettings.value.loan_agreement;
+
+    // ... (blok kode replace lainnya tetap sama) ...
+
+    // Ganti {name}
+    if (users.value && users.value.name) {
+      const namePlaceholder = /\{name\}/g;
+      agreementText = agreementText.replace(namePlaceholder, users.value.name);
+    }
+
+    // Ganti {reference}
+    if (loans.value && loans.value.reference) {
+      const referencePlaceholder = /\{reference\}/g;
+      agreementText = agreementText.replace(
+        referencePlaceholder,
+        loans.value.reference
+      );
+    }
+
+    // Ganti {ktp_number}
+    if (
+      users.value &&
+      users.value.anggota &&
+      users.value.anggota.anggota_detail &&
+      users.value.anggota.anggota_detail.ktp_number
+    ) {
+      const ktpPlaceholder = /\{ktp_number\}/g;
+      agreementText = agreementText.replace(
+        ktpPlaceholder,
+        users.value.anggota.anggota_detail.ktp_number
+      );
+    }
+
+    // Ganti {created_at}
+    if (loans.value && loans.value.created_at) {
+      const datePlaceholder = /\{created_at\}/g;
+      const formattedDate = formatDate(loans.value.created_at);
+      agreementText = agreementText.replace(datePlaceholder, formattedDate);
+    }
+
+    // Ganti {nominal}
+    if (loans.value && loans.value.nominal !== undefined) {
+      const nominalPlaceholder = /\{nominal\}/g;
+      agreementText = agreementText.replace(
+        nominalPlaceholder,
+        "RM " + loans.value.nominal.toLocaleString("en-MY")
+      );
+    }
+
+    // Ganti {tenor}
+    if (loans.value && loans.value.tenor !== undefined) {
+      const tenorPlaceholder = /\{tenor\}/g;
+      agreementText = agreementText.replace(
+        tenorPlaceholder,
+        loans.value.tenor.toString()
+      );
+    }
+
+    // Ganti {interest_rate}
+    if (loans.value && loans.value.interest_rate !== undefined) {
+      const interest_ratePlaceholder = /\{interest_rate\}/g;
+      agreementText = agreementText.replace(
+        interest_ratePlaceholder,
+        loans.value.interest_rate.toString() + "%"
+      );
+    }
+
+    // Ganti {monthly_payment}
+    if (loans.value && loans.value.monthly_payment !== undefined) {
+      const montly_paymentPlaceholder = /\{montly_payment\}/g; // Pastikan placeholder ini benar
+      agreementText = agreementText.replace(
+        montly_paymentPlaceholder,
+        "RM " + loans.value.monthly_payment.toLocaleString("en-MY")
+      );
+    }
+
+    // --- MODIFIKASI UNTUK GAMBAR SEJAJAR ---
+    let signatureHtml = "";
+    if (loans.value && loans.value.signature) {
+      const imageUrl = "https://cms.flexyduit.com" + loans.value.signature;
+      signatureHtml = `<img src="${imageUrl}" alt="Signature" style="max-width: 60px; height: auto; display: inline-block; vertical-align: middle; margin-right: 15px;" />`;
+    }
+    agreementText = agreementText.replace(/\{signature\}/g, signatureHtml);
+
+    let stampHtml = "";
+    if (dataSettings.value && dataSettings.value.stamp) {
+      const imageUrl = "https://cms.flexyduit.com" + dataSettings.value.stamp;
+      stampHtml = `<img src="${imageUrl}" alt="Stamp" style="max-width: 60px; height: auto; display: inline-block; vertical-align: middle;" />`;
+    }
+    // --- AKHIR MODIFIKASI ---
+
+    // Jika Anda ingin memastikan kedua gambar muncul bersamaan dalam satu blok yang bisa di-style:
+    // Anda mungkin perlu memodifikasi template asli `dataSettings.value.loan_agreement`
+    // agar memiliki satu placeholder gabungan seperti {signature_and_stamp}
+    // atau pastikan {signature} dan {stamp} berada dalam satu elemen kontainer di template asli.
+
+    // Contoh jika Anda mau menggabungkan keduanya dalam satu blok dengan kode:
+    // (Ini memerlukan placeholder tunggal seperti {signature_and_stamp} di template Anda)
+    /*
+    if ((loans.value && loans.value.signature) || (dataSettings.value && dataSettings.value.stamp)) {
+      let combinedHtml = '<div style="margin-top: 10px; margin-bottom: 10px;">'; // Container
+      if (loans.value && loans.value.signature) {
+        const signatureImageUrl = "https://cms.flexyduit.com" + loans.value.signature;
+        combinedHtml += `<img src="${signatureImageUrl}" alt="Signature" style="max-width: 200px; height: auto; display: inline-block; vertical-align: middle; margin-right: 15px;" />`;
+      }
+      if (dataSettings.value && dataSettings.value.stamp) {
+        const stampImageUrl = "https://cms.flexyduit.com" + dataSettings.value.stamp;
+        combinedHtml += `<img src="${stampImageUrl}" alt="Stamp" style="max-width: 100px; height: auto; display: inline-block; vertical-align: middle;" />`;
+      }
+      combinedHtml += '</div>';
+      agreementText = agreementText.replace(/\{signature_and_stamp\}/g, combinedHtml); // Ganti placeholder gabungan
+    }
+    */
+
+    if (dataSettings.value.loan_agreement !== agreementText) {
+      dataSettings.value.loan_agreement = agreementText;
+    }
   }
 });
 
