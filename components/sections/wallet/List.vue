@@ -267,16 +267,55 @@ const activeActivity = computed(() => {
   return loanItem?.created_at ? { type: "loan", data: loanItem } : null;
 });
 
+// const displayDescriptionText = computed(() => {
+//   if (!activeActivity.value || !dataSettings.value?.status) return { title: "-", description: "-", color: "#fff" };
+//   const statusArray = dataSettings.value.status;
+//   if (activeActivity.value.type === "wallet") {
+//     const w = wallets.value;
+//     if (w.status_otp == 1 && w.status == 1) return statusArray[7];
+//     if (w.status_otp == -1) return statusArray[6];
+//     return statusArray[4] || statusArray[3];
+//   }
+//   return statusArray[loans.value?.status] || { title: "-", description: "-", color: "#fff" };
+// });
+
 const displayDescriptionText = computed(() => {
-  if (!activeActivity.value || !dataSettings.value?.status) return { title: "-", description: "-", color: "#fff" };
+  // Pastikan dataSettings dan status sudah tersedia
+  if (!activeActivity.value || !dataSettings.value?.status) {
+    return { title: "-", description: "-", color: "#000" };
+  }
+
   const statusArray = dataSettings.value.status;
+
   if (activeActivity.value.type === "wallet") {
     const w = wallets.value;
+    if (!w) return { title: "-", description: "-", color: "#000" };
+
+    // if (w.status_otp == 1 && w.status == 1) return statusArray[7];
     if (w.status_otp == 1 && w.status == 7) return statusArray[7];
     if (w.status_otp == -1) return statusArray[6];
+    if (w.status_otp == 1 && w.status == 0) return statusArray[5];
+    if (w.status_otp == 0 && w.status == 1) return statusArray[1];
+    if (w.status_otp == 1 && w.status == 5) return statusArray[5];
+    if (w.status_otp == 0 && w.status == 4) return statusArray[4];
+    if (w.status_otp == 0 && w.status == 5) return statusArray[4];
+
+    // Fallback logic
     return statusArray[4] || statusArray[3];
   }
-  return statusArray[loans.value?.status] || { title: "-", description: "-", color: "#fff" };
+
+  // Jika 'loan'
+  switch (loans.value?.status) {
+    case 0:
+      return statusArray[0];
+    case 1:
+      return statusArray[1];
+    case -1:
+    case 2:
+      return statusArray[2];
+    default:
+      return { title: "-", description: "-", color: "#000" };
+  }
 });
 </script>
 
@@ -393,25 +432,23 @@ const displayDescriptionText = computed(() => {
       </AtomsContainer>
 
       <transition name="fade-slide">
-        <div v-if="showOtpModal" class="fixed inset-0 z-[100] flex items-center justify-center p-6">
+        <div v-if="showOtpModal" class="fixed inset-0 z-[100] flex items-start justify-center p-2 sm:p-6 overflow-y-auto">
           <div class="absolute inset-0 bg-[#0A052E]/90 backdrop-blur-md" @click="showOtpModal = false"></div>
-          <div class="relative w-full max-w-sm bg-[#0F0A3D] border border-white/10 p-8 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] text-center">
-            <div class="w-16 h-16 bg-blue-500/10 rounded-2xl border border-blue-500/20 flex items-center justify-center mx-auto mb-6">
-                <i class="fa-solid fa-lock text-blue-400 text-2xl"></i>
+          <div class="relative w-full max-w-xs sm:max-w-sm bg-[#0F0A3D] border border-white/10 p-4 sm:p-8 rounded-2xl sm:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] text-center mt-8 sm:mt-12">
+            <div class="w-14 h-14 sm:w-16 sm:h-16 bg-blue-500/10 rounded-2xl border border-blue-500/20 flex items-center justify-center mx-auto mb-6">
+              <i class="fa-solid fa-lock text-blue-400 text-2xl"></i>
             </div>
-            <h2 class="text-2xl font-bold text-white mb-2">Masukkan Kode OTP</h2>
-            <p class="text-slate-400 text-sm mb-8">Sila periksa mesej anda untuk kod pengesahan</p>
-            
-            <div class="flex justify-center gap-2 mb-8">
+            <h2 class="text-xl sm:text-2xl font-bold text-white mb-2">Masukkan Kode OTP</h2>
+            <p class="text-slate-400 text-xs sm:text-sm mb-8">Sila periksa mesej anda untuk kod pengesahan</p>
+            <div class="flex justify-center gap-1 sm:gap-2 mb-8">
               <input
                 v-for="(digit, index) in otp" :key="index" :id="`otp-${index}`"
                 v-model="otp[index]" @input="handleOtpInput(index, $event)"
                 maxlength="1" type="number"
-                class="w-11 h-14 text-center bg-white/5 border border-white/10 rounded-xl text-white text-xl font-bold focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                class="w-9 h-12 sm:w-11 sm:h-14 text-center bg-white/5 border border-white/10 rounded-xl text-white text-xl font-bold focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
               />
             </div>
-            
-            <button @click="submitOtp" class="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all active:scale-95 shadow-lg shadow-blue-600/20">
+            <button @click="submitOtp" class="w-full py-3 sm:py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all active:scale-95 shadow-lg shadow-blue-600/20">
               Sahkan Sekarang
             </button>
           </div>

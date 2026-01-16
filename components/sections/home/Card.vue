@@ -100,11 +100,12 @@ onBeforeUnmount(() => {
             </span>
           </div>
           <transition name="slide-up" mode="out-in">
-            <div :key="currentIndex" class="w-full text-center pl-6">
+            <div :key="currentIndex" class="w-full text-left pl-6">
               <p v-if="currentInformation" class="text-sm md:text-base text-slate-300 font-medium truncate">
                 <span class="text-blue-400 font-bold mr-1">{{ maskNumber(String(currentInformation.number)) }}</span>
                 <span class="opacity-80">Berjaya Mengeluarkan</span>
-                <span class="ml-2 font-black text-white bg-blue-500/20 px-2 py-0.5 rounded text-sm">
+                <br>
+                <span class="font-black text-white bg-blue-500/20 py-0.5 rounded text-sm">
                   RM{{ Number(currentInformation.nominal).toLocaleString("en-MY") }}
                 </span>
               </p>
