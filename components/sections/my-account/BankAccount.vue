@@ -20,7 +20,7 @@ const form = ref({
 });
 
 const showAccountNumber = ref(false);
-const baseURL = "https://cms.flexyduit.com/";
+const baseURL = "https://cms.mysolutionlending.com/";
 
 onMounted(async () => {
   await loadData();
@@ -74,15 +74,15 @@ const saveBankInfo = async () => {
 // Update Background Style - Premium Deep Navy
 const myAccountBackgroundStyle = computed(() => {
   return {
-    backgroundColor: "#0A052E",
-    backgroundImage: `radial-gradient(circle at 50% 10%, rgba(37, 99, 235, 0.1) 0%, transparent 50%)`,
+    // backgroundColor: "#0A052E",
+    // backgroundImage: `radial-gradient(circle at 50% 10%, rgba(37, 99, 235, 0.1) 0%, transparent 50%)`,
   };
 });
 </script>
 
 <template>
   <section
-    class="relative flex justify-center items-start min-h-screen bg-[#0A052E] py-24 overflow-hidden"
+    class="relative flex justify-center items-start min-h-screen py-24 overflow-hidden"
     :style="myAccountBackgroundStyle"
   >
     <div class="absolute top-[-10%] right-[-10%] w-80 h-80 bg-blue-600/10 blur-[120px] rounded-full"></div>

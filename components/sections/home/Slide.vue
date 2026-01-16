@@ -84,7 +84,7 @@ const scrollToRight = (): void => {
 const fetchLoan = async () => {
   const token = getCookie("token");
   try {
-    const response = await fetch("https://cms.flexyduit.com/api/v1/banner", {
+    const response = await fetch("https://cms.mysolutionlending.com/api/v1/banner", {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -114,7 +114,7 @@ onMounted(async () => {
 const homeBackgroundStyle = computed(() => {
   if (settings.value?.background_home) {
     return {
-      backgroundImage: `url('https://cms.flexyduit.com/${settings.value.background_home}')`,
+      backgroundImage: `url('https://cms.mysolutionlending.com/${settings.value.background_home}')`,
       backgroundSize: 'cover'
     };
   }

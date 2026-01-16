@@ -108,7 +108,7 @@ const fetchNotification = async () => {
   }
 
   try {
-    const response = await fetch("https://cms.flexyduit.com/api/v1/notification", {
+    const response = await fetch("https://cms.mysolutionlending.com/api/v1/notification", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,

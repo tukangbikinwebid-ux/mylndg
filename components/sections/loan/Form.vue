@@ -24,7 +24,7 @@ const fetchLoan = async () => {
 
   try {
     const response = await fetch(
-      "https://cms.flexyduit.com/api/v1/loans?orderBy=updated_at&order=desc&paginate=10&page=1",
+      "https://cms.mysolutionlending.com/api/v1/loans?orderBy=updated_at&order=desc&paginate=10&page=1",
       {
         method: "GET",
         headers: {
@@ -71,7 +71,7 @@ const signaturePad = ref<HTMLCanvasElement | null>(null);
 const isDrawing = ref(false);
 
 const form = ref({
-  nominal: 3000,
+  nominal: 5000,
   tenor: 6,
   contract_checklist: 0,
   signature: null as any,
@@ -87,8 +87,8 @@ const showModal = ref(false);
 
 // Background Style
 const loginBackgroundStyle = computed(() => ({
-  backgroundColor: "#0A052E",
-  backgroundImage: `radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.1) 0%, transparent 40%)`,
+  // backgroundColor: "#0A052E",
+  // backgroundImage: `radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.1) 0%, transparent 40%)`,
 }));
 
 // Logic Signature (Tetap sama)
@@ -141,7 +141,7 @@ const submitForm = async (e: Event) => {
     }
     loanData.append("contract_checklist", agreedTerms.value ? "1" : "0");
 
-    const response = await fetch("https://cms.flexyduit.com/api/v1/loans", {
+    const response = await fetch("https://cms.mysolutionlending.com/api/v1/loans", {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
       body: loanData,
@@ -185,9 +185,9 @@ const handleNominalInput = (event: Event) => {
 };
 
 const validateNominal = () => {
-  if (form.value.nominal < 3000) {
-    alert("Minimum RM 3,000");
-    form.value.nominal = 3000;
+  if (form.value.nominal < 5000) {
+    alert("Minimum RM 5,000");
+    form.value.nominal = 5000;
   }
   form.value.nominal = Math.round(form.value.nominal / 1000) * 1000;
   calculateLoan();
@@ -198,8 +198,9 @@ onMounted(() => setMonth(6));
 </script>
 
 <template>
+  
   <section
-    class="relative flex justify-center items-start min-h-screen bg-[#0A052E] py-20 overflow-hidden"
+    class="relative flex justify-center items-start min-h-screen py-20 overflow-hidden"
     :style="loginBackgroundStyle"
   >
     <div class="absolute top-[-10%] right-[-10%] w-96 h-96 bg-blue-600/10 blur-[120px] rounded-full"></div>
@@ -243,7 +244,7 @@ onMounted(() => setMonth(6));
                         />
                     </div>
                     <div class="flex gap-3">
-                        <button type="button" @click="form.nominal >= 4000 ? (form.nominal -= 1000, calculateLoan()) : null" class="flex-1 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold hover:bg-white/10 transition-all">- 1K</button>
+                        <button type="button" @click="form.nominal >= 6000 ? (form.nominal -= 1000, calculateLoan()) : null" class="flex-1 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold hover:bg-white/10 transition-all">- 1K</button>
                         <button type="button" @click="form.nominal += 1000, calculateLoan()" class="flex-1 py-3 bg-blue-600/20 border border-blue-500/30 rounded-xl text-blue-400 font-bold hover:bg-blue-600/30 transition-all">+ 1K</button>
                     </div>
                 </div>

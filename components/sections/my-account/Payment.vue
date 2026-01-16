@@ -1,6 +1,6 @@
 <template>
   <section 
-    class="relative min-h-screen bg-[#0A052E] pb-32 overflow-hidden font-sans" 
+    class="relative min-h-screen pb-32 overflow-hidden font-sans" 
     :style="myAccountBackgroundStyle"
   >
     <div class="absolute top-[-5%] left-[-10%] w-72 h-72 bg-blue-600/10 blur-[120px] rounded-full"></div>
@@ -218,7 +218,7 @@ const fetchDetail = async (id: any) => {
   const token = getCookie("token");
 
   try {
-    const response = await fetch(`https://cms.flexyduit.com/api/v1/loans/${id}`, {
+    const response = await fetch(`https://cms.mysolutionlending.com/api/v1/loans/${id}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -248,7 +248,7 @@ const fetchTransactionHistory = async () => {
 
   try {
     const response = await fetch(
-      "https://cms.flexyduit.com/api/v1/loans?orderBy=updated_at&order=desc&paginate=10&page=1",
+      "https://cms.mysolutionlending.com/api/v1/loans?orderBy=updated_at&order=desc&paginate=10&page=1",
       {
         method: "GET",
         headers: {
@@ -306,7 +306,7 @@ const handlePayment = async () => {
     formData.append("loan_detail_id", String(loanDetail.value.id));
     formData.append("image", paymentImage.value);
 
-    const response = await fetch("https://cms.flexyduit.com/api/v1/loans/pay", {
+    const response = await fetch("https://cms.mysolutionlending.com/api/v1/loans/pay", {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
       body: formData,

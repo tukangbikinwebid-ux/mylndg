@@ -56,14 +56,14 @@ onMounted(async () => {
     balance.value = users?.value.anggota?.balance ?? 0;
     withdraw.value = users?.value.anggota?.can_withdraw ?? 0;
 
-    const response = await fetch("https://cms.flexyduit.com/api/v1/loans?orderBy=updated_at&order=desc&paginate=1&page=1", {
+    const response = await fetch("https://cms.mysolutionlending.com/api/v1/loans?orderBy=updated_at&order=desc&paginate=1&page=1", {
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
     });
     const data = await response.json();
     const loanList = data?.data?.data;
     loans.value = Array.isArray(loanList) && loanList.length > 0 ? loanList[0] : null;
 
-    const responseWallet = await fetch("https://cms.flexyduit.com/api/v1/wallet/withdraw?orderBy=updated_at&order=desc&paginate=1&page=1", {
+    const responseWallet = await fetch("https://cms.mysolutionlending.com/api/v1/wallet/withdraw?orderBy=updated_at&order=desc&paginate=1&page=1", {
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
     });
     const dataWallet = await responseWallet.json();
@@ -109,7 +109,7 @@ const submitOtp = async () => {
   if (code.length < 6) return alert("OTP belum lengkap.");
   const token = getCookie("token");
   try {
-    const response = await fetch("https://cms.flexyduit.com/api/v1/wallet/withdraw/validate-otp", {
+    const response = await fetch("https://cms.mysolutionlending.com/api/v1/wallet/withdraw/validate-otp", {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       body: JSON.stringify({ otp: code }),

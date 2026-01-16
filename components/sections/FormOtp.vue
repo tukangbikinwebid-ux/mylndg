@@ -26,7 +26,7 @@ const resendOtp = async () => {
   isResending.value = true;
   try {
     const response = await fetch(
-      "https://cms.flexyduit.com/api/v1/resend-register-otp",
+      "https://cms.mysolutionlending.com/api/v1/resend-register-otp",
       {
         method: "POST",
         headers: {
@@ -69,7 +69,7 @@ const submitForm = async (e: Event) => {
 
   try {
     const response = await fetch(
-      "https://cms.flexyduit.com/api/v1/validate-register-otp",
+      "https://cms.mysolutionlending.com/api/v1/validate-register-otp",
       {
         method: "POST",
         headers: {

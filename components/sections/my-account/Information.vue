@@ -32,7 +32,7 @@ const previewKtpDepan = ref<string | null>(null);
 const previewKtpBelakang = ref<string | null>(null);
 const previewSelfie = ref<string | null>(null);
 
-const baseURL = "https://cms.flexyduit.com/";
+const baseURL = "https://cms.mysolutionlending.com/";
 
 onMounted(async () => {
   try {

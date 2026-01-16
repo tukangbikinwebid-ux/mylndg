@@ -12,7 +12,7 @@ const currentIndex = ref(0);
 const fetchInformation = async () => {
   const token = getCookie("token");
   try {
-    const response = await fetch("https://cms.flexyduit.com/api/v1/information", {
+    const response = await fetch("https://cms.mysolutionlending.com/api/v1/information", {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -28,7 +28,7 @@ const fetchInformation = async () => {
 const fetchPartner = async () => {
   const token = getCookie("token");
   try {
-    const response = await fetch("https://cms.flexyduit.com/api/v1/partner", {
+    const response = await fetch("https://cms.mysolutionlending.com/api/v1/partner", {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -81,7 +81,7 @@ onBeforeUnmount(() => {
 
 <template>
   <section
-    class="min-h-screen bg-[#0A052E] pb-24 relative overflow-hidden"
+    class="min-h-screen bg-[#0A052E] pb-24 relative overflow-hidden rounded-[2rem]"
     id="home"
   >
     <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full"></div>
@@ -125,17 +125,18 @@ onBeforeUnmount(() => {
                 <span class="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></span>
                 <span class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Limit Tersedia</span>
             </div>
-            <h1 class="text-3xl md:text-5xl font-bold text-white tracking-tight leading-tight">
-              {{ $t("home.card.title") }},<br/> 
-              <span class="text-blue-400">{{ name }} 👋</span>
+            <h1 class="flex items-center gap-1.5 text-xl md:text-3xl font-bold text-white tracking-tight leading-tight flex-wrap">
+              <span>{{ $t("home.card.title") }},</span>
+              <span class="text-blue-400 font-bold">{{ name }}</span>
+              <span class="text-base md:text-2xl">👋</span>
             </h1>
             <p class="text-slate-400 text-lg font-light max-w-md">
               {{ $t("home.card.description") }}
             </p>
             <div class="flex items-baseline gap-3">
               <span class="text-xl font-medium text-slate-500">RM</span>
-              <span class="text-4xl md:text-6xl font-black text-white tracking-tighter">
-                3,000 - 200,000
+              <span class="text-3xl md:text-3xl font-black text-white tracking-tighter">
+                5,000 - 200,000
               </span>
             </div>
           </div>

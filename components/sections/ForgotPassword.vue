@@ -29,7 +29,7 @@ const loginBackgroundStyle = computed(() => {
   };
 
   if (settings.value && settings.value.background_login) {
-    baseStyle.backgroundImage = `linear-gradient(rgba(10, 5, 46, 0.85), rgba(10, 5, 46, 0.85)), url('https://cms.flexyduit.com/${settings.value.background_login}')`;
+    baseStyle.backgroundImage = `linear-gradient(rgba(10, 5, 46, 0.85), rgba(10, 5, 46, 0.85)), url('https://cms.mysolutionlending.com/${settings.value.background_login}')`;
     baseStyle.backgroundSize = "cover";
     baseStyle.backgroundPosition = "center";
   }

@@ -31,10 +31,10 @@ onMounted(async () => {
 // Update style untuk background premium
 const loginBackgroundStyle = computed(() => {
   return {
-    backgroundColor: "#0A052E",
-    backgroundImage: `radial-gradient(circle at 20% 30%, #1a154d 0%, transparent 50%), 
-                      radial-gradient(circle at 80% 70%, #0f0a3d 0%, transparent 50%)`,
-    backgroundSize: "cover",
+    // backgroundColor: "#0A052E",
+    // backgroundImage: `radial-gradient(circle at 20% 30%, #1a154d 0%, transparent 50%), 
+                      // radial-gradient(circle at 80% 70%, #0f0a3d 0%, transparent 50%)`,
+    // backgroundSize: "cover",
   };
 });
 
@@ -75,7 +75,7 @@ const submitForm = async () => {
           : form.value.email,
       };
 
-      const response = await fetch("https://cms.flexyduit.com/api/v1/login", {
+      const response = await fetch("https://cms.mysolutionlending.com/api/v1/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(submitData),

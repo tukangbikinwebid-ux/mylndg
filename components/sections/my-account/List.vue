@@ -25,7 +25,7 @@ onMounted(async () => {
       ? true
       : false;
     credit.value = user.value.anggota?.credit_score || 0;
-    previewPhoto.value = "https://cms.flexyduit.com/" + user.value.image;
+    previewPhoto.value = "https://cms.mysolutionlending.com/" + user.value.image;
   } catch (error) {
     console.error(error);
     window.location.href = "/sign-in";
@@ -36,8 +36,8 @@ onMounted(async () => {
 
 const myAccountBackgroundStyle = computed(() => {
   return {
-    backgroundColor: "#0A052E",
-    backgroundImage: `radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.1) 0%, transparent 50%)`,
+    // backgroundColor: "#0A052E",
+    // backgroundImage: `radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.1) 0%, transparent 50%)`,
   };
 });
 
@@ -59,7 +59,7 @@ const handleLogout = () => {
 
 <template>
   <section
-    class="relative min-h-screen bg-[#0A052E] pb-32 overflow-hidden"
+    class="relative min-h-screen pb-32 overflow-hidden"
     :style="myAccountBackgroundStyle"
   >
     <div class="absolute top-[-10%] left-[-10%] w-72 h-72 bg-blue-600/10 blur-[120px] rounded-full"></div>

@@ -31,8 +31,8 @@ onMounted(async () => {
 // Premium Dark Background with Radial Glows
 const myAccountBackgroundStyle = computed(() => {
   return {
-    backgroundColor: "#0A052E",
-    backgroundImage: `radial-gradient(circle at 50% 10%, rgba(37, 99, 235, 0.1) 0%, transparent 50%)`,
+    // backgroundColor: "#0A052E",
+    // backgroundImage: `radial-gradient(circle at 50% 10%, rgba(37, 99, 235, 0.1) 0%, transparent 50%)`,
   };
 });
 
@@ -60,7 +60,7 @@ const submitForm = async (e: Event) => {
 
   try {
     const response = await fetch(
-      "https://cms.flexyduit.com/api/v1/profile/password",
+      "https://cms.mysolutionlending.com/api/v1/profile/password",
       {
         method: "PUT",
         headers: {
@@ -92,7 +92,7 @@ const submitForm = async (e: Event) => {
 
 <template>
   <section
-    class="relative flex justify-center items-start min-h-screen bg-[#0A052E] py-24 overflow-hidden"
+    class="relative flex justify-center items-start min-h-screen py-24 overflow-hidden"
     :style="myAccountBackgroundStyle"
   >
     <div class="absolute top-[-10%] left-[-10%] w-80 h-80 bg-blue-600/10 blur-[120px] rounded-full"></div>

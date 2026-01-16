@@ -74,7 +74,7 @@ const fetchTransactionHistory = async () => {
 
   try {
     const response = await fetch(
-      "https://cms.flexyduit.com/api/v1/wallet/transactions",
+      "https://cms.mysolutionlending.com/api/v1/wallet/transactions",
       {
         method: "GET",
         headers: {

@@ -1,6 +1,6 @@
 <template>
   <section 
-    class="relative min-h-screen bg-[#0A052E] pb-28 overflow-hidden" 
+    class="relative min-h-screen pb-28 overflow-hidden" 
     :style="myAccountBackgroundStyle"
   >
     <div class="absolute top-[-10%] left-[-10%] w-80 h-80 bg-blue-600/10 blur-[120px] rounded-full"></div>
@@ -110,7 +110,7 @@ const fetchTransactionHistory = async () => {
 
   try {
     const response = await fetch(
-      "https://cms.flexyduit.com/api/v1/wallet/transactions",
+      "https://cms.mysolutionlending.com/api/v1/wallet/transactions",
       {
         method: "GET",
         headers: {

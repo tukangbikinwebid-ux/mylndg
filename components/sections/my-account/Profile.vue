@@ -31,7 +31,7 @@ onMounted(async () => {
     form.value.email = user.value.email;
     form.value.phone = user.value.anggota.phone;
     form.value.address = user.value.anggota.address;
-    previewPhoto.value = "https://cms.flexyduit.com/" + user.value.image;
+    previewPhoto.value = "https://cms.mysolutionlending.com/" + user.value.image;
   } catch (error) {
     console.error(error);
     window.location.href = "/sign-in";
@@ -82,7 +82,7 @@ const submitForm = async (e: Event) => {
       formData.append("image", form.value.image);
     }
 
-    const response = await fetch("https://cms.flexyduit.com/api/v1/profile", {
+    const response = await fetch("https://cms.mysolutionlending.com/api/v1/profile", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,

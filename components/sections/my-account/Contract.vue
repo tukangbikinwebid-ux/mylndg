@@ -20,7 +20,7 @@ onMounted(async () => {
     withdraw.value = users?.value.anggota?.can_withdraw ?? 0;
 
     const response = await fetch(
-      "https://cms.flexyduit.com/api/v1/loans?orderBy=updated_at&order=desc&paginate=1&page=1",
+      "https://cms.mysolutionlending.com/api/v1/loans?orderBy=updated_at&order=desc&paginate=1&page=1",
       {
         method: "GET",
         headers: {
@@ -118,14 +118,14 @@ watchEffect(() => {
 const titleMenu = computed(() => `${t("my-account.title-menu")} - ${t("my-account.menu-contract")}`);
 
 const myAccountBackgroundStyle = computed(() => ({
-  backgroundColor: "#0A052E",
-  backgroundImage: `radial-gradient(circle at 20% 30%, rgba(37, 99, 235, 0.1) 0%, transparent 50%)`,
+  // backgroundColor: "#0A052E",
+  // backgroundImage: `radial-gradient(circle at 20% 30%, rgba(37, 99, 235, 0.1) 0%, transparent 50%)`,
 }));
 </script>
 
 <template>
   <section
-    class="relative flex justify-center items-start min-h-screen bg-[#0A052E] py-24 overflow-hidden"
+    class="relative flex justify-center items-start min-h-screen py-24 overflow-hidden"
     id="contract-page"
     :style="myAccountBackgroundStyle"
   >

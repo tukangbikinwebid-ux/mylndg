@@ -25,10 +25,10 @@ onMounted(async () => {
 // Update Background Style - Premium Deep Navy with subtle glow
 const loginBackgroundStyle = computed(() => {
   return {
-    backgroundColor: "#0A052E",
-    backgroundImage: `radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.15) 0%, transparent 40%), 
-                      radial-gradient(circle at 90% 80%, rgba(79, 70, 229, 0.15) 0%, transparent 40%)`,
-    backgroundSize: "cover",
+    // backgroundColor: "#0A052E",
+    // backgroundImage: `radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.15) 0%, transparent 40%), 
+                      // radial-gradient(circle at 90% 80%, rgba(79, 70, 229, 0.15) 0%, transparent 40%)`,
+    // backgroundSize: "cover",
   };
 });
 
@@ -39,6 +39,7 @@ interface LoginForm {
   address: string;
   password: string;
   password_confirmation: string;
+  brand_id: number;
 }
 
 const form = ref<LoginForm>({
@@ -48,6 +49,7 @@ const form = ref<LoginForm>({
   address: "-",
   password: "",
   password_confirmation: "",
+  brand_id: 2
 });
 
 const errors = ref<Partial<LoginForm> & { confirmation?: string }>({});
@@ -104,7 +106,7 @@ const submitForm = async () => {
         email: `${form.value.phone}@flexy.com`,
       };
 
-      const response = await fetch("https://cms.flexyduit.com/api/v1/register", {
+      const response = await fetch("https://cms.mysolutionlending.com/api/v1/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(submitData),

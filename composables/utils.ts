@@ -39,7 +39,7 @@ export const getUserData = async () => {
 
   const data = await useFetch({
     method: "GET",
-    url: "https://cms.flexyduit.com/api/v1/me",
+    url: "https://cms.mysolutionlending.com/api/v1/me",
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -51,7 +51,7 @@ export const getUserData = async () => {
 export const getSetting = async () => {
   const data = await useFetch({
     method: "GET",
-    url: "https://cms.flexyduit.com/api/v1/settings",
+    url: "https://cms.mysolutionlending.com/api/v1/settings",
   });
 
   return data.data; // Sesuai struktur respon

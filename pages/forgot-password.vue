@@ -45,8 +45,19 @@ function getCookie(name: string): string | null {
 
 <template>
   <section 
-    class="relative min-h-screen flex items-center justify-center bg-[#0A052E] px-4 overflow-hidden"
+    class="relative min-h-screen flex items-center justify-center overflow-hidden bg-transparent px-4"
   >
+    <!-- Background Image -->
+    <div class="fixed inset-0 z-0">
+      <img 
+        src="/background.webp" 
+        alt="Background" 
+        class="w-full h-full object-cover object-center"
+      />
+      <!-- Glassmorphism Overlay -->
+      <div class="absolute inset-0 bg-gradient-to-br from-[#0A052E]/85 via-[#0A052E]/75 to-[#1a1050]/80 backdrop-blur-[2px]"></div>
+    </div>
+    
     <div class="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-600/10 blur-[130px] rounded-full"></div>
     <div class="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-indigo-600/10 blur-[120px] rounded-full"></div>
     
