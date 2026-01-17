@@ -71,7 +71,7 @@ useHead({
       </div>
 
       <p class="mt-8 text-center text-slate-600 text-xs font-medium tracking-widest uppercase">
-        &copy; 2026 FlexyDuit Premium System
+        &copy; 2026 My Solution Lending Premium System
       </p>
     </div>
   </section>

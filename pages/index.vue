@@ -86,16 +86,6 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div class="space-y-4 animate-enter" style="animation-delay: 0.2s">
-        <div class="flex justify-between items-center px-1 sm:px-2">
-            <h3 class="text-xs sm:text-sm font-bold text-slate-400 uppercase tracking-widest">Promosi Terkini</h3>
-            <span class="text-xs text-blue-400 hover:text-blue-300 cursor-pointer transition-colors">Lihat Semua</span>
-        </div>
-        <div class="rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-2xl shadow-black/30 border border-white/10 backdrop-blur-xl">
-          <SectionsHomeSlide />
-        </div>
-      </div>
-
     </main>
 
     <div class="fixed bottom-0 left-0 w-full z-50">

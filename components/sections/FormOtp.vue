@@ -133,7 +133,7 @@ const handleBackspace = (e: KeyboardEvent, index: number) => {
           <div class="mb-8 inline-block p-4 bg-white/5 rounded-2xl border border-white/10 shadow-xl">
             <img
               src="/logo-flexyduit.png"
-              alt="FlexyDuit"
+              alt="My Solution Lending"
               class="mx-auto h-12 w-auto brightness-110"
             />
           </div>

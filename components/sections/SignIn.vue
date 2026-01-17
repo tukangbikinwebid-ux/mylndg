@@ -143,7 +143,7 @@ const submitForm = async () => {
           <div class="p-3 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-md">
             <img
               src="/mylendingsolution.png"
-              alt="FlexyDuit"
+              alt="My Solution Lending"
               class="h-24 object-contain brightness-110 contrast-125"
             />
           </div>
