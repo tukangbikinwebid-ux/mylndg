@@ -155,6 +155,14 @@ const submitBankInformation = async () => {
   }
 };
 
+const notification = ref<{ type: 'success' | 'error'; message: string; visible: boolean }>({ type: 'success', message: '', visible: false });
+function showNotification(type: 'success' | 'error', message: string) {
+  notification.value = { type, message, visible: true };
+  setTimeout(() => {
+    notification.value.visible = false;
+  }, 3500);
+}
+
 const handleSubmit = async () => {
   isSubmitting.value = true;
   submitError.value = null;
@@ -167,9 +175,11 @@ const handleSubmit = async () => {
     ]);
 
     if (personalInfoResult.success && bankInfoResult.success) {
-      console.log(t("verification-account.allInfoSubmitSuccess"));
+      showNotification('success', t("verification-account.allInfoSubmitSuccess"));
       updateSuccess.value = true;
-      window.location.href = "/my-account"; // Redirect after successful submission of both forms
+      setTimeout(() => {
+        window.location.href = "/my-account";
+      }, 1200);
     } else {
       let errorMessage = "";
       if (personalInfoResult.error) {
@@ -178,17 +188,12 @@ const handleSubmit = async () => {
       if (bankInfoResult.error) {
         errorMessage += bankInfoResult.error;
       }
-      submitError.value =
-        errorMessage.trim() || t("verification-account.allInfoSubmitFailed");
-      console.error(t("verification-account.someOrAllInfoSubmitFailed"), {
-        personalInfoResult,
-        bankInfoResult,
-      });
+      showNotification('error', errorMessage.trim() || t("verification-account.allInfoSubmitFailed"));
+      submitError.value = errorMessage.trim() || t("verification-account.allInfoSubmitFailed");
     }
   } catch (error: any) {
-    submitError.value =
-      error.message || t("verification-account.unexpectedSubmissionError");
-    console.error(t("verification-account.submissionError"), error);
+    showNotification('error', error.message || t("verification-account.unexpectedSubmissionError"));
+    submitError.value = error.message || t("verification-account.unexpectedSubmissionError");
   } finally {
     isSubmitting.value = false;
   }
@@ -410,6 +415,18 @@ useHead({
         <p v-if="updateSuccess" class="text-green-400 text-[10px] text-center mt-3 font-bold uppercase tracking-tight">✅ Pengesahan Berjaya!</p>
       </div>
     </div>
+
+    <!-- Notifikasi Custom -->
+    <transition name="notify-center">
+      <div v-if="notification.visible">
+        <div class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity"></div>
+        <div :class="[ 'fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 px-8 py-8 rounded-3xl shadow-2xl border flex flex-col items-center', notification.type === 'success' ? 'bg-blue-500/40 border-blue-500/30' : 'bg-red-500/40 border-red-500/30' ]" style="backdrop-filter: blur(24px); min-width: 320px; max-width: 95vw;">
+          <span v-if="notification.type === 'success'" class="inline-flex items-center justify-center w-20 h-20 mb-4 rounded-full bg-blue-500/60 text-white text-5xl shadow-lg">✔️</span>
+          <span v-else class="inline-flex items-center justify-center w-20 h-20 mb-4 rounded-full bg-red-500/60 text-white text-5xl shadow-lg">❌</span>
+          <span class="text-white font-bold text-lg text-center leading-snug">{{ notification.message }}</span>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -454,5 +471,36 @@ input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+/* Animasi Transisi */
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fade-slide-enter-from,
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-15px) scale(0.95);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Notifikasi Pusat */
+.notify-center-enter-active,
+.notify-center-leave-active {
+  transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1), transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.notify-center-enter-from,
+.notify-center-leave-to {
+  opacity: 0;
+  transform: scale(0.85) translate(-50%, -50%);
 }
 </style>

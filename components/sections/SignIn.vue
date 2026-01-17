@@ -47,6 +47,15 @@ const errors = ref<Partial<LoginForm>>({});
 const isLoading = ref(false);
 const showPassword = ref(false);
 
+const notification = ref<{ type: 'success' | 'error'; message: string; visible: boolean }>({ type: 'success', message: '', visible: false });
+
+function showNotification(type: 'success' | 'error', message: string) {
+  notification.value = { type, message, visible: true };
+  setTimeout(() => {
+    notification.value.visible = false;
+  }, 3500);
+}
+
 const changeLocale = (code: string) => {
   locale.value = code;
   setLocale(code);
@@ -85,18 +94,18 @@ const submitForm = async () => {
 
       if (!response.ok) {
         const errorMessage = result.message || "Terjadi kesalahan. Silakan coba lagi.";
-        alert(errorMessage);
+        showNotification('error', errorMessage);
         return;
       }
 
       const token = result.data.token;
       document.cookie = `token=${token}; path=/; max-age=${60 * 30}`;
 
-      alert("Log masuk berjaya!");
+      showNotification('success', "Log masuk berjaya!");
       window.location.href = "/";
     } catch (error: any) {
       console.error("Network Error:", error);
-      alert("Gagal terhubung ke server. Sila periksa koneksi internet anda.");
+      showNotification('error', "Gagal terhubung ke server. Sila periksa koneksi internet anda.");
     } finally {
       isLoading.value = false;
     }
@@ -109,6 +118,20 @@ const submitForm = async () => {
     class="relative flex items-center justify-center min-h-screen px-4 py-8 overflow-hidden font-sans"
     :style="loginBackgroundStyle"
   >
+    <!-- Notifikasi Custom -->
+    <transition name="notify-center">
+      <div v-if="notification.visible">
+        <!-- Overlay gelap -->
+        <div class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity"></div>
+        <!-- Popup notifikasi -->
+        <div :class="[ 'fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 px-8 py-8 rounded-3xl shadow-2xl border flex flex-col items-center', notification.type === 'success' ? 'bg-blue-500/40 border-blue-500/30' : 'bg-red-500/40 border-red-500/30' ]" style="backdrop-filter: blur(24px); min-width: 320px; max-width: 95vw;">
+          <span v-if="notification.type === 'success'" class="inline-flex items-center justify-center w-20 h-20 mb-4 rounded-full bg-blue-500/60 text-white text-5xl shadow-lg">✔️</span>
+          <span v-else class="inline-flex items-center justify-center w-20 h-20 mb-4 rounded-full bg-red-500/60 text-white text-5xl shadow-lg">❌</span>
+          <span class="text-white font-bold text-lg text-center leading-snug">{{ notification.message }}</span>
+        </div>
+      </div>
+    </transition>
+
     <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/20 blur-[120px] rounded-full"></div>
     <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-600/20 blur-[120px] rounded-full"></div>
 
@@ -261,7 +284,7 @@ const submitForm = async () => {
 .fade-slide-enter-from,
 .fade-slide-leave-to {
   opacity: 0;
-  transform: translateY(15px) scale(0.95);
+  transform: translateY(-15px) scale(0.95);
 }
 
 .fade-enter-active,
@@ -271,6 +294,17 @@ const submitForm = async () => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+/* Notifikasi Pusat */
+.notify-center-enter-active,
+.notify-center-leave-active {
+  transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1), transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.notify-center-enter-from,
+.notify-center-leave-to {
+  opacity: 0;
+  transform: scale(0.85) translate(-50%, -50%);
 }
 
 /* Custom Scrollbar untuk Dropdown jika dibutuhkan */

@@ -56,6 +56,7 @@ const errors = ref<Partial<LoginForm> & { confirmation?: string }>({});
 const isLoading = ref(false);
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
+const notification = ref<{ type: 'success' | 'error'; message: string; visible: boolean }>({ type: 'success', message: '', visible: false });
 
 const changeLocale = (code: string) => {
   locale.value = code;
@@ -97,6 +98,13 @@ const handlePhoneInput = (e: Event) => {
   form.value.phone = val;
 };
 
+function showNotification(type: 'success' | 'error', message: string) {
+  notification.value = { type, message, visible: true };
+  setTimeout(() => {
+    notification.value.visible = false;
+  }, 3500);
+}
+
 const submitForm = async () => {
   if (await validateForm()) {
     isLoading.value = true;
@@ -115,10 +123,12 @@ const submitForm = async () => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Terjadi kesalahan.");
 
-      alert(data.message || "Pendaftaran Berhasil!");
-      window.location.href = "/sign-in";
+      showNotification('success', data.message || "Pendaftaran Berhasil!");
+      setTimeout(() => {
+        window.location.href = "/sign-in";
+      }, 1200);
     } catch (error: any) {
-      alert(error?.message || "Terjadi kesalahan.");
+      showNotification('error', error?.message || "Terjadi kesalahan.");
     } finally {
       isLoading.value = false;
     }
@@ -293,6 +303,20 @@ const submitForm = async () => {
         </div>
       </div>
     </div>
+
+    <!-- Notifikasi Custom -->
+    <transition name="notify-center">
+      <div v-if="notification.visible">
+        <!-- Overlay gelap -->
+        <div class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity"></div>
+        <!-- Popup notifikasi -->
+        <div :class="[ 'fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 px-8 py-8 rounded-3xl shadow-2xl border flex flex-col items-center', notification.type === 'success' ? 'bg-blue-500/40 border-blue-500/30' : 'bg-red-500/40 border-red-500/30' ]" style="backdrop-filter: blur(24px); min-width: 320px; max-width: 95vw;">
+          <span v-if="notification.type === 'success'" class="inline-flex items-center justify-center w-20 h-20 mb-4 rounded-full bg-blue-500/60 text-white text-5xl shadow-lg">✔️</span>
+          <span v-else class="inline-flex items-center justify-center w-20 h-20 mb-4 rounded-full bg-red-500/60 text-white text-5xl shadow-lg">❌</span>
+          <span class="text-white font-bold text-lg text-center leading-snug">{{ notification.message }}</span>
+        </div>
+      </div>
+    </transition>
   </section>
 </template>
 
@@ -305,6 +329,25 @@ const submitForm = async () => {
 .fade-slide-leave-to {
   opacity: 0;
   transform: translateY(15px) scale(0.95);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.notify-center-enter-active,
+.notify-center-leave-active {
+  transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1), transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.notify-center-enter-from,
+.notify-center-leave-to {
+  opacity: 0;
+  transform: scale(0.85) translate(-50%, -50%);
 }
 
 /* Chrome/Safari Hide Scrollbar */

@@ -424,7 +424,7 @@ const displayDescriptionText = computed(() => {
 
         <div v-if="dataSettings?.wallet" class="mt-12">
            <img
-            :src="`https://cms.mysolutionlending.com${dataSettings.wallet}`"
+            :src="`${dataSettings.wallet}`"
             class="w-full rounded-[2.5rem] border border-white/5 shadow-2xl"
           />
         </div>
