@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { t } = useI18n();
 useHead({
-  title: "Flexyduit",
+  title: "My Solution Lending",
   meta: [
     {
       name: "description",

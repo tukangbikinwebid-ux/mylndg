@@ -38,7 +38,7 @@ onMounted(() => {
 });
 
 useHead({
-  title: "Dompet - Flexyduit",
+  title: "Dompet - My Solution Lending",
   meta: [
     {
       name: "description",

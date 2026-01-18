@@ -17,7 +17,7 @@ onMounted(async () => {
 
 // Meta Information
 useHead({
-  title: "Penyelenggaraan Sistem - Flexyduit",
+  title: "Penyelenggaraan Sistem - My Solution Lending",
 });
 </script>
 

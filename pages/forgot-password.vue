@@ -7,7 +7,7 @@ const isLoading = ref(true);
 
 // SEO & Meta
 useHead({
-  title: "Lupa Kata Laluan - Flexyduit",
+  title: "Lupa Kata Laluan - My Solution Lending",
   meta: [
     { name: "description", content: "Pulihkan akses akaun anda dengan selamat." }
   ]
@@ -74,7 +74,7 @@ function getCookie(name: string): string | null {
             <div class="p-4 bg-white/5 backdrop-blur-md rounded-3xl border border-white/10 shadow-2xl">
               <img 
                 src="/logo-flexyduit.png" 
-                alt="Flexyduit" 
+                alt="My Solution Lending" 
                 class="h-12 w-auto brightness-110"
               />
             </div>

@@ -101,8 +101,15 @@ const submitForm = async () => {
       const token = result.data.token;
       document.cookie = `token=${token}; path=/; max-age=${60 * 30}`;
 
+      // 1. Tampilkan notifikasi sukses
       showNotification('success', "Log masuk berjaya!");
+
+      // 2. Tunggu selama 3 detik (3000ms) agar user bisa melihat pesan
+      await new Promise(resolve => setTimeout(resolve, 3000));
+
+      // 3. Baru pindah halaman
       window.location.href = "/";
+
     } catch (error: any) {
       console.error("Network Error:", error);
       showNotification('error', "Gagal terhubung ke server. Sila periksa koneksi internet anda.");
@@ -121,10 +128,15 @@ const submitForm = async () => {
     <!-- Notifikasi Custom -->
     <transition name="notify-center">
       <div v-if="notification.visible">
-        <!-- Overlay gelap -->
-        <div class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity"></div>
-        <!-- Popup notifikasi -->
-        <div :class="[ 'fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 px-8 py-8 rounded-3xl shadow-2xl border flex flex-col items-center', notification.type === 'success' ? 'bg-blue-500/40 border-blue-500/30' : 'bg-red-500/40 border-red-500/30' ]" style="backdrop-filter: blur(24px); min-width: 320px; max-width: 95vw;">
+        <div class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"></div>
+        
+        <div 
+          :class="[ 
+            'fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 px-8 py-8 rounded-3xl shadow-2xl border flex flex-col items-center', 
+            notification.type === 'success' ? 'bg-blue-500/40 border-blue-500/30' : 'bg-red-500/40 border-red-500/30' 
+          ]" 
+          style="backdrop-filter: blur(24px); min-width: 320px; max-width: 95vw;"
+        >
           <span v-if="notification.type === 'success'" class="inline-flex items-center justify-center w-20 h-20 mb-4 rounded-full bg-blue-500/60 text-white text-5xl shadow-lg">✔️</span>
           <span v-else class="inline-flex items-center justify-center w-20 h-20 mb-4 rounded-full bg-red-500/60 text-white text-5xl shadow-lg">❌</span>
           <span class="text-white font-bold text-lg text-center leading-snug">{{ notification.message }}</span>
@@ -294,17 +306,6 @@ const submitForm = async () => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-}
-
-/* Notifikasi Pusat */
-.notify-center-enter-active,
-.notify-center-leave-active {
-  transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1), transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.notify-center-enter-from,
-.notify-center-leave-to {
-  opacity: 0;
-  transform: scale(0.85) translate(-50%, -50%);
 }
 
 /* Custom Scrollbar untuk Dropdown jika dibutuhkan */

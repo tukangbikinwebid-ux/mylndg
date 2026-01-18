@@ -23,7 +23,7 @@ onMounted(async () => {
 });
 
 useHead({
-  title: "Flexyduit",
+  title: "My Solution Lending",
   meta: [
     {
       name: "description",

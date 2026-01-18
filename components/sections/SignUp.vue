@@ -123,10 +123,15 @@ const submitForm = async () => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Terjadi kesalahan.");
 
+      // 1. Tampilkan notifikasi
       showNotification('success', data.message || "Pendaftaran Berhasil!");
-      setTimeout(() => {
-        window.location.href = "/sign-in";
-      }, 1200);
+
+      // 2. Tunggu selama 3 detik (3000ms)
+      await new Promise(resolve => setTimeout(resolve, 3000));
+
+      // 3. Pindah ke halaman sign-in
+      window.location.href = "/sign-in";
+
     } catch (error: any) {
       showNotification('error', error?.message || "Terjadi kesalahan.");
     } finally {
@@ -307,10 +312,14 @@ const submitForm = async () => {
     <!-- Notifikasi Custom -->
     <transition name="notify-center">
       <div v-if="notification.visible">
-        <!-- Overlay gelap -->
-        <div class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity"></div>
-        <!-- Popup notifikasi -->
-        <div :class="[ 'fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 px-8 py-8 rounded-3xl shadow-2xl border flex flex-col items-center', notification.type === 'success' ? 'bg-blue-500/40 border-blue-500/30' : 'bg-red-500/40 border-red-500/30' ]" style="backdrop-filter: blur(24px); min-width: 320px; max-width: 95vw;">
+        <div class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"></div>
+        <div 
+          :class="[ 
+            'fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 px-8 py-8 rounded-3xl shadow-2xl border flex flex-col items-center', 
+            notification.type === 'success' ? 'bg-blue-500/40 border-blue-500/30' : 'bg-red-500/40 border-red-500/30' 
+          ]" 
+          style="backdrop-filter: blur(24px); min-width: 320px; max-width: 95vw;"
+        >
           <span v-if="notification.type === 'success'" class="inline-flex items-center justify-center w-20 h-20 mb-4 rounded-full bg-blue-500/60 text-white text-5xl shadow-lg">✔️</span>
           <span v-else class="inline-flex items-center justify-center w-20 h-20 mb-4 rounded-full bg-red-500/60 text-white text-5xl shadow-lg">❌</span>
           <span class="text-white font-bold text-lg text-center leading-snug">{{ notification.message }}</span>
@@ -338,16 +347,6 @@ const submitForm = async () => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-}
-
-.notify-center-enter-active,
-.notify-center-leave-active {
-  transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1), transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.notify-center-enter-from,
-.notify-center-leave-to {
-  opacity: 0;
-  transform: scale(0.85) translate(-50%, -50%);
 }
 
 /* Chrome/Safari Hide Scrollbar */
