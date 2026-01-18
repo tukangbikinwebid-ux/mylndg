@@ -103,11 +103,21 @@ const maskNumber = (num: string) => {
               <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
             </span>
           </div>
-          <div class="marquee-container flex items-center">
+          <div class="marquee-container flex items-center whitespace-nowrap">
             <div class="marquee-content flex items-center gap-12 pl-16">
-              <div v-for="(info, idx) in [...informations, ...informations]" :key="idx" class="flex items-center gap-3">
+              <div v-for="(info, idx) in informations" :key="idx" class="flex items-center gap-3">
                 <p class="text-sm md:text-base text-slate-300 font-medium">
-                  <span class="text-blue-400 font-bold mr-1">{{ maskNumber(info.number) }}</span>
+                  <span class="text-blue-400 font-bold mr-1">{{ maskNumber(String(info.number)) }}</span>
+                  <span class="opacity-80">Berjaya Mengeluarkan</span>
+                  <span class="ml-2 font-black text-white bg-blue-500/20 px-2 py-0.5 rounded text-sm">
+                    RM{{ Number(info.nominal).toLocaleString("en-MY") }}
+                  </span>
+                </p>
+                <span class="text-white/20">•</span>
+              </div>
+              <div v-for="(info, idx) in informations" :key="'dup-'+idx" class="flex items-center gap-3">
+                <p class="text-sm md:text-base text-slate-300 font-medium">
+                  <span class="text-blue-400 font-bold mr-1">{{ maskNumber(String(info.number)) }}</span>
                   <span class="opacity-80">Berjaya Mengeluarkan</span>
                   <span class="ml-2 font-black text-white bg-blue-500/20 px-2 py-0.5 rounded text-sm">
                     RM{{ Number(info.nominal).toLocaleString("en-MY") }}
@@ -232,13 +242,14 @@ const maskNumber = (num: string) => {
 
 <style scoped>
 /* Smooth Marquee */
+/* Marquee Styles */
 .marquee-container {
   overflow: hidden;
   width: 100%;
 }
 .marquee-content {
   display: flex;
-  animation: marquee 30s linear infinite;
+  animation: marquee 40s linear infinite;
 }
 .marquee-container:hover .marquee-content {
   animation-play-state: paused;
