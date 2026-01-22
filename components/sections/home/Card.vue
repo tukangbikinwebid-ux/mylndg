@@ -231,7 +231,7 @@ const maskNumber = (num: string) => {
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-8">
           <div v-for="(partner, index) in partners" :key="index" class="flex justify-center p-6 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/[0.05] transition-all group">
-            <img :src="`${partner.image}`" class="h-10 md:h-12 w-auto object-contain grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500" alt="Partner Logo" />
+            <img :src="`${partner.image}`" class="h-full md:h-full w-auto object-contain group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500" alt="Partner Logo" />
           </div>
         </div>
       </div>

@@ -185,8 +185,9 @@ const setMonth = (val: number) => {
   form.value.tenor = val;
   let rate = 0.5;
   if (val === 12) rate = 0.6;
-  else if (val === 24) rate = 0.7;
-  else if (val === 36) rate = 0.8;
+  else if (val === 18) rate = 0.7;
+  else if (val === 24) rate = 0.8;
+  else if (val === 36) rate = 0.9;
   form.value.interest_rate = rate;
   calculateLoan();
 };
@@ -284,7 +285,7 @@ onMounted(() => setMonth(6));
                 <div class="space-y-4 mb-10">
                     <label class="block text-xs font-semibold text-slate-300 uppercase tracking-widest ml-1">{{ t("loan.form.loan-term") }} ({{ t("loan.card.month") }})</label>
                     <div class="flex justify-between gap-2">
-                        <button v-for="m in [6, 12, 24, 36]" :key="m" type="button" @click="setMonth(m)"
+                        <button v-for="m in [6, 12, 18, 24, 36]" :key="m" type="button" @click="setMonth(m)"
                             class="flex-1 py-4 rounded-xl font-bold transition-all border"
                             :class="form.tenor === m ? 'bg-blue-600 border-blue-500 text-white shadow-lg' : 'bg-white/5 border-white/10 text-slate-400'">
                             {{ m }}
