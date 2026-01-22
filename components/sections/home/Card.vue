@@ -17,6 +17,8 @@ const banners = ref<any[]>([]);
 const sliderRef = ref<HTMLElement | null>(null);
 const nextIsVisible = ref(false);
 const prevIsVisible = ref(false);
+const autoScrollInterval = ref<NodeJS.Timeout | null>(null);
+const isPaused = ref(false);
 
 // --- Fetching Logic (Simplified) ---
 const fetchData = async (endpoint: string) => {
@@ -50,6 +52,77 @@ const scroll = (direction: 'left' | 'right'): void => {
   el.scrollBy({ left: offset, behavior: 'smooth' });
 };
 
+// --- Auto Scroll Logic ---
+const isMobile = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  return window.innerWidth < 768; // md breakpoint
+};
+
+const getScrollDistance = (): number => {
+  const el = sliderRef.value;
+  if (!el || el.children.length === 0) return 0;
+  
+  const firstChild = el.children[0] as HTMLElement;
+  if (!firstChild) return 0;
+  
+  if (isMobile()) {
+    // Mobile: scroll 1 image (w-full)
+    // Scroll by one image width + gap
+    const imageWidth = firstChild.offsetWidth;
+    return imageWidth + 16; // gap-4 = 16px
+  } else {
+    // Desktop: scroll 2 images (each is w-[calc(50%-12px)])
+    // Scroll by two image widths + gap
+    const imageWidth = firstChild.offsetWidth;
+    return (imageWidth * 2) + 24; // gap-6 = 24px
+  }
+};
+
+const autoScroll = (): void => {
+  if (isPaused.value) return;
+  
+  const el = sliderRef.value;
+  if (!el || banners.value.length === 0) return;
+  
+  const scrollDistance = getScrollDistance();
+  const maxScroll = el.scrollWidth - el.clientWidth;
+  
+  // Check if we've reached the end
+  if (el.scrollLeft >= maxScroll - 5) {
+    // Reset to start
+    el.scrollTo({ left: 0, behavior: 'smooth' });
+  } else {
+    // Scroll forward
+    el.scrollBy({ left: scrollDistance, behavior: 'smooth' });
+  }
+  
+  // Update nav visibility after scroll
+  setTimeout(updateNavVisibility, 100);
+};
+
+const startAutoScroll = (): void => {
+  if (autoScrollInterval.value) {
+    clearInterval(autoScrollInterval.value);
+  }
+  // Auto scroll every 3 seconds
+  autoScrollInterval.value = setInterval(autoScroll, 3000);
+};
+
+const stopAutoScroll = (): void => {
+  if (autoScrollInterval.value) {
+    clearInterval(autoScrollInterval.value);
+    autoScrollInterval.value = null;
+  }
+};
+
+const pauseAutoScroll = (): void => {
+  isPaused.value = true;
+};
+
+const resumeAutoScroll = (): void => {
+  isPaused.value = false;
+};
+
 // --- Lifecycle ---
 onMounted(async () => {
   // Load UI Data
@@ -73,12 +146,21 @@ onMounted(async () => {
   }
 
   // Init Slider Nav
-  setTimeout(updateNavVisibility, 500);
-  window.addEventListener('resize', updateNavVisibility);
+  setTimeout(() => {
+    updateNavVisibility();
+    startAutoScroll();
+  }, 500);
+  
+  window.addEventListener('resize', () => {
+    updateNavVisibility();
+    stopAutoScroll();
+    startAutoScroll();
+  });
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', updateNavVisibility);
+  stopAutoScroll();
 });
 
 // --- Utils ---
@@ -179,7 +261,11 @@ const maskNumber = (num: string) => {
 
         <div 
           ref="sliderRef" 
-          @scroll="updateNavVisibility" 
+          @scroll="updateNavVisibility"
+          @mouseenter="pauseAutoScroll"
+          @mouseleave="resumeAutoScroll"
+          @touchstart="pauseAutoScroll"
+          @touchend="resumeAutoScroll"
           class="flex gap-4 md:gap-6 overflow-x-auto invisible-scroll snap-x snap-mandatory py-4 scroll-smooth"
         >
           <div
