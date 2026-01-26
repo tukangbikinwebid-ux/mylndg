@@ -31,8 +31,8 @@ onMounted(async () => {
 // Premium Dark Background with Radial Glows
 const myAccountBackgroundStyle = computed(() => {
   return {
-    // backgroundColor: "#0A052E",
-    // backgroundImage: `radial-gradient(circle at 50% 10%, rgba(37, 99, 235, 0.1) 0%, transparent 50%)`,
+    backgroundColor: "#0A052E",
+    backgroundImage: `radial-gradient(circle at 50% -20%, rgba(37, 99, 235, 0.15) 0%, transparent 50%)`,
   };
 });
 
@@ -92,31 +92,32 @@ const submitForm = async (e: Event) => {
 
 <template>
   <section
-    class="relative flex justify-center items-start min-h-screen py-24 overflow-hidden"
+    class="relative flex justify-center items-start min-h-screen bg-[#0A052E] py-24 overflow-hidden"
     :style="myAccountBackgroundStyle"
   >
-    <div class="absolute top-[-10%] left-[-10%] w-80 h-80 bg-blue-600/10 blur-[120px] rounded-full"></div>
-    <div class="absolute bottom-[-10%] right-[-10%] w-72 h-72 bg-indigo-600/10 blur-[100px] rounded-full"></div>
+    <div class="absolute top-[-10%] right-[-10%] w-80 h-80 bg-blue-600/10 blur-[120px] rounded-full"></div>
+    <div class="absolute bottom-[-10%] left-[-10%] w-72 h-72 bg-indigo-600/10 blur-[100px] rounded-full"></div>
 
     <div class="w-full relative z-10 px-5">
       <CardsNavigasiHeader :title="titleMenu" type="menu" />
       
       <AtomsContainer class-name="relative pt-6">
         <div class="animate-enter bg-white/[0.03] backdrop-blur-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-[2.5rem] p-8 md:p-10">
-          
-          <div class="text-center mb-10">
-            <div class="w-16 h-16 bg-blue-600/10 rounded-2xl border border-blue-500/20 flex items-center justify-center mx-auto mb-4">
-              <i class="fa-solid fa-shield-keyhole text-blue-400 text-2xl"></i>
+          <div class="flex items-center justify-between mb-10">
+            <div class="space-y-1">
+              <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight">
+                {{ t("my-account.change-password.title") || "Keselamatan Akaun" }}
+              </h1>
+              <p class="text-blue-400 text-[10px] font-bold uppercase tracking-[0.2em]">Change Password</p>
             </div>
-            <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight">
-              Keselamatan Akaun
-            </h1>
-            <p class="text-slate-400 text-sm font-light mt-2">Kemas kini kata laluan anda secara berkala</p>
+            <div class="w-12 h-12 bg-blue-600/10 rounded-2xl border border-blue-500/20 flex items-center justify-center">
+              <i class="fa-solid fa-shield-keyhole text-blue-400 text-xl"></i>
+            </div>
           </div>
 
           <form @submit="submitForm" class="space-y-6">
             <div class="space-y-2">
-              <label class="block text-[10px] font-bold text-slate-300 uppercase tracking-widest ml-1">
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">
                 {{ t("my-account.change-password.password") }}
               </label>
               <div class="relative group">
@@ -127,14 +128,18 @@ const submitForm = async (e: Event) => {
                   class="input-glass"
                   required
                 />
-                <button type="button" @click="showCurrentPassword = !showCurrentPassword" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors">
+                <button 
+                  type="button" 
+                  @click="showCurrentPassword = !showCurrentPassword" 
+                  class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+                >
                   <i class="fa-solid" :class="showCurrentPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
                 </button>
               </div>
             </div>
 
             <div class="space-y-2">
-              <label class="block text-[10px] font-bold text-slate-300 uppercase tracking-widest ml-1">
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">
                 {{ t("my-account.change-password.new_password") }}
               </label>
               <div class="relative group">
@@ -145,14 +150,18 @@ const submitForm = async (e: Event) => {
                   class="input-glass"
                   required
                 />
-                <button type="button" @click="showNewPassword = !showNewPassword" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors">
+                <button 
+                  type="button" 
+                  @click="showNewPassword = !showNewPassword" 
+                  class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+                >
                   <i class="fa-solid" :class="showNewPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
                 </button>
               </div>
             </div>
 
             <div class="space-y-2">
-              <label class="block text-[10px] font-bold text-slate-300 uppercase tracking-widest ml-1">
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">
                 {{ t("my-account.change-password.confirmation") }}
               </label>
               <div class="relative group">
@@ -163,7 +172,11 @@ const submitForm = async (e: Event) => {
                   class="input-glass"
                   required
                 />
-                <button type="button" @click="showConfirmPassword = !showConfirmPassword" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors">
+                <button 
+                  type="button" 
+                  @click="showConfirmPassword = !showConfirmPassword" 
+                  class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+                >
                   <i class="fa-solid" :class="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
                 </button>
               </div>
@@ -173,24 +186,32 @@ const submitForm = async (e: Event) => {
               <button
                 type="submit"
                 :disabled="isLoading"
-                class="group relative w-full py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-bold text-lg transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden shadow-[0_10px_30px_rgba(37,99,235,0.3)]"
+                class="group relative w-full py-5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-bold shadow-xl shadow-blue-600/20 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden uppercase tracking-widest text-xs"
               >
                 <div class="absolute inset-0 w-1/2 h-full bg-white/10 skew-x-[-25deg] -translate-x-full group-hover:translate-x-[250%] transition-transform duration-700"></div>
-                <span class="relative flex justify-center items-center">
+                <span class="relative flex justify-center items-center gap-3">
                   <span
                     v-if="isLoading"
-                    class="animate-spin h-5 w-5 border-2 border-white/30 border-t-white rounded-full mr-3"
+                    class="animate-spin h-5 w-5 border-2 border-white/30 border-t-white rounded-full"
                   ></span>
-                  {{ t("my-account.change-password.submit") }}
+                  {{ isLoading ? "Memproses..." : t("my-account.change-password.submit") }}
                 </span>
               </button>
             </div>
           </form>
           
-          <div class="mt-8 p-4 bg-blue-500/5 border border-blue-500/10 rounded-2xl">
-            <p class="text-[11px] text-slate-400 text-center leading-relaxed italic">
-              Nota: Gunakan sekurang-kurangnya 6 aksara dengan gabungan huruf dan nombor untuk keselamatan yang lebih baik.
-            </p>
+          <div class="mt-8 p-6 bg-blue-600/10 border border-blue-500/20 rounded-[2rem]">
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center border border-blue-500/20 flex-shrink-0">
+                <i class="fa-solid fa-info-circle text-blue-400"></i>
+              </div>
+              <div>
+                <h3 class="text-xs font-bold text-blue-400 mb-2 uppercase tracking-[0.2em]">Nota Keselamatan</h3>
+                <p class="text-[11px] text-slate-400 leading-relaxed">
+                  Gunakan sekurang-kurangnya 6 aksara dengan gabungan huruf dan nombor untuk keselamatan yang lebih baik. Elakkan menggunakan maklumat peribadi sebagai kata laluan.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </AtomsContainer>
@@ -220,7 +241,7 @@ const submitForm = async (e: Event) => {
   }
 }
 
-/* Hide scrollbar */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   display: none;
 }

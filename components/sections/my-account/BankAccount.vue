@@ -74,15 +74,15 @@ const saveBankInfo = async () => {
 // Update Background Style - Premium Deep Navy
 const myAccountBackgroundStyle = computed(() => {
   return {
-    // backgroundColor: "#0A052E",
-    // backgroundImage: `radial-gradient(circle at 50% 10%, rgba(37, 99, 235, 0.1) 0%, transparent 50%)`,
+    backgroundColor: "#0A052E",
+    backgroundImage: `radial-gradient(circle at 50% -20%, rgba(37, 99, 235, 0.15) 0%, transparent 50%)`,
   };
 });
 </script>
 
 <template>
   <section
-    class="relative flex justify-center items-start min-h-screen py-24 overflow-hidden"
+    class="relative flex justify-center items-start min-h-screen bg-[#0A052E] py-24 overflow-hidden"
     :style="myAccountBackgroundStyle"
   >
     <div class="absolute top-[-10%] right-[-10%] w-80 h-80 bg-blue-600/10 blur-[120px] rounded-full"></div>
@@ -104,67 +104,102 @@ const myAccountBackgroundStyle = computed(() => {
             </div>
             <button 
                 @click="isEditMode = !isEditMode"
-                class="p-3 bg-white/5 border border-white/10 rounded-2xl text-slate-300 hover:text-blue-400 transition-all active:scale-95"
+                class="p-3 bg-white/5 border border-white/10 rounded-2xl text-blue-400 hover:bg-white/10 transition-all active:scale-95"
             >
                 <i class="fa-solid" :class="isEditMode ? 'fa-xmark' : 'fa-pen-to-square'"></i>
             </button>
           </div>
 
-          <div v-if="!isEditMode" class="space-y-6">
-            <div class="flex flex-col space-y-2 border-b border-white/5 pb-4">
+          <div v-if="!isEditMode" class="text-left space-y-6">
+            <div class="flex flex-col space-y-1 border-b border-white/5 pb-3">
               <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{{ t("my-account.bank-data.bank") }}</span>
-              <span class="text-white text-lg font-medium">{{ form.bank_name || "-" }}</span>
+              <span class="text-white font-medium text-lg">{{ form.bank_name || "-" }}</span>
             </div>
             
-            <div class="flex flex-col space-y-2 border-b border-white/5 pb-4">
+            <div class="flex flex-col space-y-1 border-b border-white/5 pb-3">
               <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{{ t("my-account.bank-data.name") }}</span>
-              <span class="text-white text-lg font-medium">{{ form.account_name || "-" }}</span>
+              <span class="text-white font-medium text-lg">{{ form.account_name || "-" }}</span>
             </div>
 
-            <div class="flex flex-col space-y-2 border-b border-white/5 pb-4">
+            <div class="flex flex-col space-y-1 border-b border-white/5 pb-3">
               <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{{ t("my-account.bank-data.nomor") }}</span>
               <div class="flex items-center justify-between">
-                <span class="text-white text-xl font-mono tracking-widest">
+                <span class="text-white font-mono text-lg tracking-widest">
                   {{ showAccountNumber ? form.account_number : "•••• •••• ••••" }}
                 </span>
                 <button 
                     @click="showAccountNumber = !showAccountNumber"
-                    class="p-2 bg-white/5 border border-white/10 rounded-xl text-blue-400"
+                    class="text-slate-500 hover:text-white transition-colors"
                 >
                     <i class="fa-solid" :class="showAccountNumber ? 'fa-eye-slash' : 'fa-eye'"></i>
                 </button>
               </div>
             </div>
 
-            <div class="mt-10 p-5 bg-blue-500/5 border border-blue-500/10 rounded-2xl flex items-start gap-4">
-                <i class="fa-solid fa-shield-check text-blue-400 mt-1"></i>
-                <p class="text-xs text-slate-400 italic leading-relaxed">Sila pastikan maklumat akaun bank anda adalah tepat untuk memudahkan proses pengeluaran dana.</p>
+            <div class="mt-8 p-6 bg-blue-600/10 border border-blue-500/20 rounded-[2rem]">
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center border border-blue-500/20 flex-shrink-0">
+                  <i class="fa-solid fa-shield-check text-blue-400"></i>
+                </div>
+                <div>
+                  <h3 class="text-xs font-bold text-blue-400 mb-2 uppercase tracking-[0.2em]">Nota Penting</h3>
+                  <p class="text-[11px] text-slate-400 leading-relaxed">
+                    Sila pastikan maklumat akaun bank anda adalah tepat untuk memudahkan proses pengeluaran dana. Semua maklumat akan dienkripsi dan dilindungi dengan selamat.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
           <form v-else @submit.prevent="saveBankInfo" class="space-y-6">
              <div class="space-y-2">
-                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nama Bank</label>
-                <input v-model="form.bank_name" type="text" placeholder="Contoh: Maybank, CIMB" class="input-glass" />
+                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Nama Bank</label>
+                <input 
+                  v-model="form.bank_name" 
+                  type="text" 
+                  placeholder="Contoh: Maybank, CIMB" 
+                  class="input-glass" 
+                  required
+                />
              </div>
              <div class="space-y-2">
-                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nama Pemegang Akaun</label>
-                <input v-model="form.account_name" type="text" placeholder="Nama penuh anda" class="input-glass" />
+                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Nama Pemegang Akaun</label>
+                <input 
+                  v-model="form.account_name" 
+                  type="text" 
+                  placeholder="Nama penuh anda" 
+                  class="input-glass" 
+                  required
+                />
              </div>
              <div class="space-y-2">
-                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nombor Akaun</label>
-                <input v-model="form.account_number" type="number" placeholder="Nombor akaun bank" class="input-glass" />
+                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Nombor Akaun</label>
+                <input 
+                  v-model="form.account_number" 
+                  type="text" 
+                  inputmode="numeric"
+                  placeholder="Nombor akaun bank" 
+                  class="input-glass" 
+                  required
+                />
              </div>
 
-             <button 
-                type="submit" 
-                :disabled="isLoading"
-                class="group relative w-full py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-bold transition-all shadow-[0_10px_30px_rgba(37,99,235,0.3)] active:scale-95 overflow-hidden"
-             >
-                <div class="absolute inset-0 w-1/2 h-full bg-white/10 skew-x-[-25deg] -translate-x-full group-hover:translate-x-[250%] transition-transform duration-700"></div>
-                <span v-if="isLoading" class="animate-spin h-5 w-5 border-2 border-white/30 border-t-white rounded-full mr-2 inline-block"></span>
-                {{ isLoading ? 'Menyimpan...' : 'Kemaskini Maklumat' }}
-             </button>
+             <div class="pt-6">
+               <button 
+                  type="submit" 
+                  :disabled="isLoading"
+                  class="group relative w-full py-5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-bold shadow-xl shadow-blue-600/20 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden uppercase tracking-widest text-xs"
+               >
+                  <div class="absolute inset-0 w-1/2 h-full bg-white/10 skew-x-[-25deg] -translate-x-full group-hover:translate-x-[250%] transition-transform duration-700"></div>
+                  <span class="relative flex justify-center items-center gap-3">
+                    <span
+                      v-if="isLoading"
+                      class="animate-spin h-5 w-5 border-2 border-white/30 border-t-white rounded-full"
+                    ></span>
+                    {{ isLoading ? 'Menyimpan...' : 'Kemaskini Maklumat' }}
+                  </span>
+               </button>
+             </div>
           </form>
 
         </div>
@@ -176,7 +211,7 @@ const myAccountBackgroundStyle = computed(() => {
 <style scoped>
 /* Input Glass Style */
 .input-glass {
-  @apply w-full px-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-blue-500/50 focus:bg-white/10 outline-none transition-all text-white placeholder:text-slate-600;
+  @apply w-full px-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 focus:bg-white/10 outline-none transition-all text-white placeholder:text-slate-600;
 }
 
 /* Animasi Entrance */
@@ -200,5 +235,10 @@ input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  display: none;
 }
 </style>

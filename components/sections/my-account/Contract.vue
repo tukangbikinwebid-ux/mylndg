@@ -118,22 +118,22 @@ watchEffect(() => {
 const titleMenu = computed(() => `${t("my-account.title-menu")} - ${t("my-account.menu-contract")}`);
 
 const myAccountBackgroundStyle = computed(() => ({
-  // backgroundColor: "#0A052E",
-  // backgroundImage: `radial-gradient(circle at 20% 30%, rgba(37, 99, 235, 0.1) 0%, transparent 50%)`,
+  backgroundColor: "#0A052E",
+  backgroundImage: `radial-gradient(circle at 50% -20%, rgba(37, 99, 235, 0.15) 0%, transparent 50%)`,
 }));
 </script>
 
 <template>
   <section
-    class="relative flex justify-center items-start min-h-screen py-24 overflow-hidden"
+    class="relative flex justify-center items-start min-h-screen bg-[#0A052E] py-24 overflow-hidden"
     id="contract-page"
     :style="myAccountBackgroundStyle"
   >
-    <div class="absolute top-[-10%] right-[-10%] w-96 h-96 bg-blue-600/10 blur-[120px] rounded-full"></div>
-    <div class="absolute bottom-[-10%] left-[-10%] w-80 h-80 bg-indigo-600/10 blur-[100px] rounded-full"></div>
+    <div class="absolute top-[-10%] right-[-10%] w-80 h-80 bg-blue-600/10 blur-[120px] rounded-full"></div>
+    <div class="absolute bottom-[-10%] left-[-10%] w-72 h-72 bg-indigo-600/10 blur-[100px] rounded-full"></div>
 
     <div class="w-full relative z-10 px-5">
-      <CardsNavigasiHeader :title="titleMenu" type="menu" class="bg-[#0A052E]/60 backdrop-blur-xl border-b border-white/5" />
+      <CardsNavigasiHeader :title="titleMenu" type="menu" />
       
       <AtomsContainer class-name="relative pt-6">
         
@@ -142,31 +142,39 @@ const myAccountBackgroundStyle = computed(() => ({
           <p class="text-slate-400 animate-pulse text-sm">Menyediakan dokumen...</p>
         </div>
 
-        <div v-else class="animate-enter bg-white/[0.03] backdrop-blur-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-[2.5rem] overflow-hidden">
+        <div v-else class="animate-enter bg-white/[0.03] backdrop-blur-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-[2.5rem] p-8 md:p-10">
           
-          <div class="p-8 border-b border-white/5 bg-white/5">
-             <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-blue-600/20 border border-blue-500/30 rounded-2xl flex items-center justify-center">
-                   <i class="fa-solid fa-file-contract text-blue-400 text-xl"></i>
-                </div>
-                <div>
-                   <h2 class="text-xl font-bold text-white tracking-tight">E-Kontrak Pinjaman</h2>
-                   <p class="text-blue-400 text-[10px] font-bold uppercase tracking-[0.2em]">Dokumen Rasmi & Sah</p>
-                </div>
-             </div>
+          <div class="flex items-center justify-between mb-10">
+            <div class="space-y-1">
+              <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight">
+                E-Kontrak Pinjaman
+              </h1>
+              <p class="text-blue-400 text-[10px] font-bold uppercase tracking-[0.2em]">Dokumen Rasmi & Sah</p>
+            </div>
+            <div class="w-12 h-12 bg-blue-600/10 rounded-2xl border border-blue-500/20 flex items-center justify-center">
+              <i class="fa-solid fa-file-contract text-blue-400 text-xl"></i>
+            </div>
           </div>
 
-          <div class="p-8 md:p-12">
+          <div class="mb-8">
             <div
               class="contract-viewer text-slate-300 leading-relaxed text-sm md:text-base overflow-y-auto max-h-[70vh] pr-4 custom-scrollbar"
               v-html="dataSettings?.loan_agreement"
             ></div>
           </div>
 
-          <div class="p-6 bg-white/5 border-t border-white/5 text-center">
-             <p class="text-[10px] text-slate-500 uppercase tracking-widest italic">
-                Dokumen ini dijana secara digital dan sah di bawah akta transaksi elektronik.
-             </p>
+          <div class="mt-8 p-6 bg-blue-600/10 border border-blue-500/20 rounded-[2rem]">
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center border border-blue-500/20 flex-shrink-0">
+                <i class="fa-solid fa-shield-check text-blue-400"></i>
+              </div>
+              <div>
+                <h3 class="text-xs font-bold text-blue-400 mb-2 uppercase tracking-[0.2em]">Nota Penting</h3>
+                <p class="text-[11px] text-slate-400 leading-relaxed">
+                  Dokumen ini dijana secara digital dan sah di bawah akta transaksi elektronik. Simpan dokumen ini dengan selamat untuk rujukan masa hadapan.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </AtomsContainer>
@@ -222,18 +230,19 @@ const myAccountBackgroundStyle = computed(() => ({
 
 /* Custom Scrollbar for Glassmorphism */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 5px;
+  width: 8px;
+  height: 8px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 10px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(37, 99, 235, 0.3);
+  background: rgba(59, 130, 246, 0.5);
   border-radius: 10px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(37, 99, 235, 0.5);
+  background: rgba(59, 130, 246, 0.7);
 }
 
 /* Deep Selector for Signature Images */
@@ -242,5 +251,10 @@ const myAccountBackgroundStyle = computed(() => ({
   background: rgba(255, 255, 255, 0.9); /* Sedikit putih agar signature hitam terlihat jelas */
   padding: 5px;
   box-shadow: 0 0 15px rgba(37, 99, 235, 0.2);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  display: none;
 }
 </style>

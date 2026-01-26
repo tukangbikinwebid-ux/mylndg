@@ -84,6 +84,47 @@ const form = ref({
 
 const agreedTerms = ref(false);
 const showModal = ref(false);
+const showLoanRules = ref(false);
+
+// Loan Rules Data
+const loanRules = ref({
+  interestRates: {
+    6: 0.80,
+    12: 0.80,
+    24: 0.70,
+    36: 0.60,
+    48: 0.50,
+    60: 0.40,
+    72: 0.30,
+  },
+  loanAmounts: [5000, 6000, 8000, 10000, 15000, 20000, 25000, 30000, 35000, 45000, 50000, 55000, 60000, 65000, 70000, 75000, 80000, 90000, 95000, 100000, 125000, 150000, 200000],
+  tenors: [6, 12, 24, 36, 48, 60, 72],
+  monthlyPayments: {
+    5000: { 6: 873.33, 12: 456.67, 24: 243.33, 36: 168.89, 48: 144.17, 60: 103.33, 72: 84.44 },
+    6000: { 6: 1048, 12: 548, 24: 292, 36: 202.67, 48: 173, 60: 124, 72: 101.33 },
+    8000: { 6: 1397.33, 12: 730.67, 24: 389.33, 36: 270.22, 48: 230.67, 60: 165.33, 72: 135.11 },
+    10000: { 6: 1746.67, 12: 913.33, 24: 486.67, 36: 337.78, 48: 288.33, 60: 206.67, 72: 168.89 },
+    15000: { 6: 2620, 12: 1370, 24: 730, 36: 506.67, 48: 432.50, 60: 310, 72: 253.33 },
+    20000: { 6: 3493.33, 12: 1826.67, 24: 973.33, 36: 675.56, 48: 576.67, 60: 413.33, 72: 337.78 },
+    25000: { 6: 4366.67, 12: 2283.33, 24: 1216.67, 36: 844.44, 48: 720.83, 60: 516.67, 72: 422.22 },
+    30000: { 6: 5240, 12: 2740, 24: 1460, 36: 1013.33, 48: 865, 60: 620, 72: 506.67 },
+    35000: { 6: 6113.33, 12: 3196.67, 24: 1703.33, 36: 1182.22, 48: 1009.17, 60: 723.33, 72: 591.11 },
+    45000: { 6: 7860, 12: 4110, 24: 2190, 36: 1520, 48: 1297.50, 60: 930, 72: 760 },
+    50000: { 6: 8733.33, 12: 4566.67, 24: 2433.33, 36: 1688.89, 48: 1441.67, 60: 1033.33, 72: 844.44 },
+    55000: { 6: 9606.67, 12: 5023.33, 24: 2676.67, 36: 1857.78, 48: 1585.83, 60: 1136.67, 72: 928.89 },
+    60000: { 6: 10480, 12: 5480, 24: 2920, 36: 2026.67, 48: 1730, 60: 1240, 72: 1013.33 },
+    65000: { 6: 11353.33, 12: 5936.67, 24: 3163.33, 36: 2195.56, 48: 1874.17, 60: 1343.33, 72: 1097.78 },
+    70000: { 6: 12226.67, 12: 6393.33, 24: 3406.67, 36: 2364.44, 48: 2018.33, 60: 1446.67, 72: 1182.22 },
+    75000: { 6: 13100, 12: 6850, 24: 3650, 36: 2533.33, 48: 2162.50, 60: 1550, 72: 1266.67 },
+    80000: { 6: 13973.33, 12: 7306.67, 24: 3893.33, 36: 2702.22, 48: 2306.67, 60: 1653.33, 72: 1351.11 },
+    90000: { 6: 15720, 12: 8220, 24: 4380, 36: 3040, 48: 2595, 60: 1860, 72: 1520 },
+    95000: { 6: 16593.33, 12: 8676.67, 24: 4623.33, 36: 3208.89, 48: 2739.17, 60: 1963.33, 72: 1604.44 },
+    100000: { 6: 17466.67, 12: 9133.33, 24: 4866.67, 36: 3377.78, 48: 2883.33, 60: 2066.67, 72: 1688.89 },
+    125000: { 6: 21833.33, 12: 11416.67, 24: 6083.33, 36: 4222.22, 48: 3604.17, 60: 2583.33, 72: 2111.11 },
+    150000: { 6: 26200, 12: 13700, 24: 7300, 36: 5066.67, 48: 4325, 60: 3100, 72: 2533.33 },
+    200000: { 6: 34933.33, 12: 18266.67, 24: 9733.33, 36: 6755.56, 48: 4766.67, 60: 4133.33, 72: 3377.78 },
+  }
+});
 
 // Background Style
 const loginBackgroundStyle = computed(() => ({
@@ -183,23 +224,48 @@ const submitForm = async (e: Event) => {
 
 const setMonth = (val: number) => {
   form.value.tenor = val;
-  let rate = 0.5;
-  if (val === 12) rate = 0.6;
-  else if (val === 18) rate = 0.7;
-  else if (val === 24) rate = 0.8;
-  else if (val === 36) rate = 0.9;
-  form.value.interest_rate = rate;
+  // Get interest rate from loan rules
+  form.value.interest_rate = loanRules.value.interestRates[val as keyof typeof loanRules.value.interestRates] || 0.8;
   calculateLoan();
 };
 
 const calculateLoan = () => {
-  const monthlyPrincipal = form.value.nominal / form.value.tenor;
-  const monthlyInterest = (form.value.nominal * form.value.interest_rate) / 100;
+  const nominal = form.value.nominal;
+  const tenor = form.value.tenor;
+  
+  // Get monthly payment from loan rules if available
+  const monthlyPaymentData = loanRules.value.monthlyPayments[nominal as keyof typeof loanRules.value.monthlyPayments];
+  let monthlyPayment = 0;
+  
+  if (monthlyPaymentData && monthlyPaymentData[tenor as keyof typeof monthlyPaymentData]) {
+    monthlyPayment = monthlyPaymentData[tenor as keyof typeof monthlyPaymentData] as number;
+  } else {
+    // Calculate if not in rules (fallback calculation)
+    // Bunga flat: Total Interest = Principal * Interest Rate * Tenor
+    // Monthly Payment = (Principal + Total Interest) / Tenor
+    const totalInterest = (nominal * form.value.interest_rate * tenor) / 100;
+    monthlyPayment = (nominal + totalInterest) / tenor;
+  }
+  
+  // Calculate breakdown
+  const monthlyPrincipal = nominal / tenor;
+  const totalInterest = (monthlyPayment * tenor) - nominal;
+  const monthlyInterest = totalInterest / tenor;
+  
   form.value.monthly_principal = monthlyPrincipal;
   form.value.monthly_interest = monthlyInterest;
-  form.value.monthly_amortization = monthlyPrincipal + monthlyInterest;
-  form.value.monthly_payment = form.value.monthly_amortization;
+  form.value.monthly_amortization = monthlyPayment;
+  form.value.monthly_payment = monthlyPayment;
 };
+
+// Computed for display
+const totalInterest = computed(() => {
+  return (form.value.monthly_payment * form.value.tenor) - form.value.nominal;
+});
+
+const totalPayment = computed(() => {
+  return form.value.monthly_payment * form.value.tenor;
+});
 
 const handleNominalInput = (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -207,20 +273,37 @@ const handleNominalInput = (event: Event) => {
   const numericValue = parseInt(rawValue) || 0;
   form.value.nominal = numericValue;
   target.value = numericValue > 0 ? `RM${numericValue.toLocaleString("en-MY")}` : "RM";
-  calculateLoan();
+  // Don't calculate here, wait for blur to validate first
 };
 
 const validateNominal = () => {
-  if (form.value.nominal < 5000) {
-    alert("Minimum RM 5,000");
-    form.value.nominal = 5000;
+  // Find closest valid loan amount
+  const validAmounts = loanRules.value.loanAmounts;
+  const minAmount = validAmounts[0];
+  const maxAmount = validAmounts[validAmounts.length - 1];
+  
+  if (form.value.nominal < minAmount) {
+    alert(`Minimum RM ${minAmount.toLocaleString("en-MY")}`);
+    form.value.nominal = minAmount;
+  } else if (form.value.nominal > maxAmount) {
+    alert(`Maximum RM ${maxAmount.toLocaleString("en-MY")}`);
+    form.value.nominal = maxAmount;
+  } else {
+    // Find closest valid amount
+    const closest = validAmounts.reduce((prev, curr) => {
+      return Math.abs(curr - form.value.nominal) < Math.abs(prev - form.value.nominal) ? curr : prev;
+    });
+    form.value.nominal = closest;
   }
-  form.value.nominal = Math.round(form.value.nominal / 1000) * 1000;
   calculateLoan();
 };
 
-// Initial calculation
-onMounted(() => setMonth(6));
+// Initial calculation - wait for component to be fully mounted
+onMounted(() => {
+  setTimeout(() => {
+    setMonth(6);
+  }, 100);
+});
 </script>
 
 <template>
@@ -270,46 +353,92 @@ onMounted(() => setMonth(6));
                         />
                     </div>
                     <div class="flex gap-3">
-                        <button type="button" @click="form.nominal >= 6000 ? (form.nominal -= 1000, calculateLoan()) : null" class="flex-1 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold hover:bg-white/10 transition-all">- 1K</button>
-                        <button type="button" @click="form.nominal += 1000, calculateLoan()" class="flex-1 py-3 bg-blue-600/20 border border-blue-500/30 rounded-xl text-blue-400 font-bold hover:bg-blue-600/30 transition-all">+ 1K</button>
+                        <button 
+                            type="button" 
+                            @click="form.nominal > loanRules.loanAmounts[0] ? (form.nominal = Math.max(loanRules.loanAmounts[0], form.nominal - 1000), validateNominal()) : null" 
+                            :disabled="form.nominal <= loanRules.loanAmounts[0]"
+                            class="flex-1 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold hover:bg-white/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
+                            - 1K
+                        </button>
+                        <button 
+                            type="button" 
+                            @click="form.nominal < loanRules.loanAmounts[loanRules.loanAmounts.length - 1] ? (form.nominal = Math.min(loanRules.loanAmounts[loanRules.loanAmounts.length - 1], form.nominal + 1000), validateNominal()) : null"
+                            :disabled="form.nominal >= loanRules.loanAmounts[loanRules.loanAmounts.length - 1]"
+                            class="flex-1 py-3 bg-blue-600/20 border border-blue-500/30 rounded-xl text-blue-400 font-bold hover:bg-blue-600/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
+                            + 1K
+                        </button>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-4 gap-2 mb-10">
-                    <button v-for="val in [10000, 20000, 50000, 100000]" :key="val" type="button" @click="form.nominal = val, calculateLoan()" 
-                        class="py-2 bg-white/5 border border-white/5 rounded-lg text-[10px] text-slate-300 font-bold hover:border-blue-500/50 transition-all">
-                        {{ val/1000 }}K
-                    </button>
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-3">
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-widest ml-1">Rekomendasi Jumlah Pinjaman</label>
+                        <button type="button" @click="showLoanRules = true" class="text-xs text-blue-400 hover:text-blue-300 font-medium underline">
+                            Lihat Aturan Pinjaman
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button 
+                            v-for="val in [10000, 20000, 50000, 100000]" 
+                            :key="val" 
+                            type="button" 
+                            @click="form.nominal = val, calculateLoan()" 
+                            class="py-2.5 px-3 bg-white/5 border rounded-xl text-[11px] text-slate-300 font-bold hover:border-blue-500/50 hover:bg-blue-500/10 transition-all"
+                            :class="form.nominal === val ? 'border-blue-500 bg-blue-500/20 text-blue-400' : 'border-white/5'">
+                            {{ val/1000 }}K
+                        </button>
+                    </div>
                 </div>
 
                 <div class="space-y-4 mb-10">
                     <label class="block text-xs font-semibold text-slate-300 uppercase tracking-widest ml-1">{{ t("loan.form.loan-term") }} ({{ t("loan.card.month") }})</label>
-                    <div class="flex justify-between gap-2">
-                        <button v-for="m in [6, 12, 18, 24, 36]" :key="m" type="button" @click="setMonth(m)"
-                            class="flex-1 py-4 rounded-xl font-bold transition-all border"
-                            :class="form.tenor === m ? 'bg-blue-600 border-blue-500 text-white shadow-lg' : 'bg-white/5 border-white/10 text-slate-400'">
+                    <div class="grid grid-cols-4 sm:grid-cols-7 gap-2">
+                        <button 
+                            v-for="m in loanRules.tenors" 
+                            :key="m" 
+                            type="button" 
+                            @click="setMonth(m)"
+                            class="py-4 rounded-xl font-bold transition-all border text-sm"
+                            :class="form.tenor === m ? 'bg-blue-600 border-blue-500 text-white shadow-lg' : 'bg-white/5 border-white/10 text-slate-400 hover:border-blue-500/30'">
                             {{ m }}
                         </button>
                     </div>
                 </div>
 
                 <div class="relative overflow-hidden bg-gradient-to-br from-blue-600/20 to-indigo-900/40 backdrop-blur-xl border border-blue-500/30 rounded-3xl p-6 shadow-[0_10px_40px_rgba(0,0,0,0.3)]">
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center text-sm border-b border-white/5 pb-2">
-                            <span class="text-slate-400">Monthly Principal</span>
-                            <span class="text-white font-bold">RM {{ form.monthly_principal.toLocaleString("en-MY") }}</span>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center text-sm border-b border-white/10 pb-3">
+                            <span class="text-slate-300">Pokok Pinjaman</span>
+                            <span class="text-white font-bold">RM {{ form.nominal.toLocaleString("en-MY") }}</span>
                         </div>
-                        <div class="flex justify-between items-center text-sm border-b border-white/5 pb-2">
-                            <span class="text-slate-400">Interest ({{ form.interest_rate }}%)</span>
-                            <span class="text-white font-bold">RM {{ form.monthly_interest.toLocaleString("en-MY") }}</span>
+                        <div class="flex justify-between items-center text-sm border-b border-white/10 pb-3">
+                            <span class="text-slate-300">Kadar Faedah</span>
+                            <span class="text-white font-bold">{{ form.interest_rate }}% / bulan</span>
                         </div>
-                        <div class="flex justify-between items-center pt-2">
-                            <div class="flex flex-col">
-                                <span class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Monthly Payment</span>
-                                <span class="text-3xl font-black text-white tracking-tighter">RM {{ form.monthly_amortization.toLocaleString("en-MY") }}</span>
+                        <div class="flex justify-between items-center text-sm border-b border-white/10 pb-3">
+                            <span class="text-slate-300">Tempoh Pinjaman</span>
+                            <span class="text-white font-bold">{{ form.tenor }} bulan</span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm border-b border-white/10 pb-3">
+                            <span class="text-slate-300">Pokok Bulanan</span>
+                            <span class="text-white font-bold">RM {{ form.monthly_principal.toLocaleString("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm border-b border-white/10 pb-3">
+                            <span class="text-slate-300">Bunga Bulanan</span>
+                            <span class="text-white font-bold">RM {{ form.monthly_interest.toLocaleString("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
+                        </div>
+                        <div class="bg-white/5 rounded-2xl p-4 border border-white/10">
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="text-[11px] text-blue-400 font-bold uppercase tracking-widest">Cicilan Bulanan</span>
+                                <span class="text-2xl font-black text-white tracking-tighter">RM {{ form.monthly_amortization.toLocaleString("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
                             </div>
-                            <div class="h-12 w-12 bg-white/10 rounded-full flex items-center justify-center border border-white/20">
-                                <i class="fa-solid fa-chart-line text-blue-400"></i>
+                            <div class="flex justify-between items-center text-xs pt-3 border-t border-white/5">
+                                <span class="text-slate-400">Total Bunga</span>
+                                <span class="text-slate-200 font-semibold">RM {{ totalInterest.toLocaleString("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs pt-2">
+                                <span class="text-slate-400">Total Bayar</span>
+                                <span class="text-green-400 font-bold">RM {{ totalPayment.toLocaleString("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
                             </div>
                         </div>
                     </div>
@@ -427,9 +556,68 @@ onMounted(() => setMonth(6));
               <div class="flex justify-between border-b border-white/5 pb-2"><span>Jumlah</span><span class="text-white font-bold">RM {{ form.nominal.toLocaleString("en-MY") }}</span></div>
               <div class="flex justify-between border-b border-white/5 pb-2"><span>Tempoh</span><span class="text-white font-medium">{{ form.tenor }} {{ t("loan.card.month") }}</span></div>
               <div class="flex justify-between border-b border-white/5 pb-2"><span>Kadar Faedah</span><span class="text-white font-medium">{{ form.interest_rate }}% / bulan</span></div>
-              <div class="flex justify-between pt-2"><span>Bayaran Bulanan</span><span class="text-blue-400 font-black text-xl">RM {{ form.monthly_payment.toLocaleString("en-MY") }}</span></div>
+              <div class="flex justify-between pt-2"><span>Bayaran Bulanan</span><span class="text-blue-400 font-black text-xl">RM {{ form.monthly_payment.toLocaleString("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span></div>
            </div>
            <button @click="showContractModal = false" class="w-full mt-10 py-4 bg-blue-600 text-white font-bold rounded-2xl">Sahkan Maklumat</button>
+        </div>
+      </div>
+    </transition>
+
+    <transition name="fade-slide">
+      <div v-if="showLoanRules" class="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6">
+        <div class="absolute inset-0 bg-[#0A052E]/95 backdrop-blur-md" @click="showLoanRules = false"></div>
+        <div class="relative bg-[#1a154d] border border-white/10 w-full max-w-7xl max-h-[90vh] p-6 md:p-8 rounded-[2.5rem] shadow-2xl text-white overflow-hidden flex flex-col">
+           <div class="flex items-center justify-between mb-6">
+             <div>
+               <h2 class="text-2xl md:text-3xl font-bold mb-2">Aturan Pinjaman</h2>
+               <p class="text-sm text-slate-400">Kadar faedah dan bayaran bulanan berdasarkan jumlah dan tempoh pinjaman</p>
+             </div>
+             <button @click="showLoanRules = false" class="text-slate-400 hover:text-white text-3xl transition-all">&times;</button>
+           </div>
+           
+           <div class="flex-1 overflow-auto pr-2 custom-scrollbar">
+             <div class="bg-white/5 rounded-2xl p-4 mb-4 border border-white/10">
+               <h3 class="text-lg font-bold mb-3 text-blue-400">Kadar Faedah Bulanan</h3>
+               <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3">
+                 <div v-for="(rate, tenor) in loanRules.interestRates" :key="tenor" class="bg-white/5 p-3 rounded-xl border border-white/10 text-center">
+                   <div class="text-xs text-slate-400 mb-1">{{ tenor }} Bulan</div>
+                   <div class="text-lg font-bold text-white">{{ rate }}%</div>
+                 </div>
+               </div>
+             </div>
+
+             <div class="overflow-x-auto">
+               <table class="w-full text-sm">
+                 <thead>
+                   <tr class="bg-blue-600/20 border-b border-blue-500/30">
+                     <th class="px-4 py-3 text-left font-bold text-blue-400 sticky left-0 bg-[#1a154d] z-10">Jumlah Pinjaman</th>
+                     <th v-for="tenor in loanRules.tenors" :key="tenor" class="px-3 py-3 text-center font-bold text-blue-400 min-w-[100px]">
+                       {{ tenor }} Bln
+                     </th>
+                   </tr>
+                 </thead>
+                 <tbody>
+                   <tr v-for="amount in loanRules.loanAmounts" :key="amount" class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                     <td class="px-4 py-3 font-bold text-white sticky left-0 bg-[#1a154d] z-10">
+                       RM {{ amount.toLocaleString("en-MY") }}
+                     </td>
+                     <td v-for="tenor in loanRules.tenors" :key="tenor" class="px-3 py-3 text-center text-slate-300">
+                       <div v-if="loanRules.monthlyPayments[amount as keyof typeof loanRules.monthlyPayments]?.[tenor as keyof typeof loanRules.monthlyPayments[5000]]">
+                         RM {{ (loanRules.monthlyPayments[amount as keyof typeof loanRules.monthlyPayments][tenor as keyof typeof loanRules.monthlyPayments[5000]] as number).toLocaleString("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                       </div>
+                       <div v-else class="text-slate-500">-</div>
+                     </td>
+                   </tr>
+                 </tbody>
+               </table>
+             </div>
+           </div>
+           
+           <div class="mt-6 pt-6 border-t border-white/10">
+             <button @click="showLoanRules = false" class="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-2xl transition-all">
+               Tutup
+             </button>
+           </div>
         </div>
       </div>
     </transition>
@@ -455,4 +643,21 @@ onMounted(() => setMonth(6));
 /* Custom MD Style */
 .custom-md-viewer :deep(h1), .custom-md-viewer :deep(h2) { font-weight: 800; margin-bottom: 1rem; color: #111; }
 .custom-md-viewer :deep(p) { margin-bottom: 0.8rem; line-height: 1.6; font-size: 0.9rem; }
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.5);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.7);
+}
 </style>
