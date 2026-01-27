@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getUserData, getSetting } from "@/composables/utils";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 
 const { t } = useI18n();
 const titleMenu = computed(() => `${t("verification-account.title-menu")}`);
@@ -36,6 +36,67 @@ const formBank = ref({
   account_number: "",
   account_name: "",
 });
+
+// Computed property untuk cek apakah semua field sudah terisi
+const isFormValid = computed(() => {
+  // Cek file uploads (wajib semua)
+  const filesValid = 
+    formInformation.value.front_ktp !== null &&
+    formInformation.value.back_ktp !== null &&
+    formInformation.value.image !== null;
+
+  // Cek personal information (wajib semua)
+  const personalInfoValid = 
+    formInformation.value.full_name.trim() !== "" &&
+    formInformation.value.ktp_number.trim() !== "" &&
+    formInformation.value.gender.trim() !== "" &&
+    formInformation.value.birth_place.trim() !== "" &&
+    formInformation.value.birth_date.trim() !== "" &&
+    formInformation.value.work.trim() !== "" &&
+    formInformation.value.monthly_income.toString().trim() !== "" &&
+    formInformation.value.loan_purpose.trim() !== "" &&
+    formInformation.value.address.trim() !== "" &&
+    formInformation.value.contact_1.trim() !== "" &&
+    formInformation.value.contact_1_name.trim() !== "";
+
+  // Cek bank information (wajib semua)
+  const bankInfoValid = 
+    formBank.value.bank_name.trim() !== "" &&
+    formBank.value.account_number.trim() !== "" &&
+    formBank.value.account_name.trim() !== "";
+
+  return filesValid && personalInfoValid && bankInfoValid;
+});
+
+// Fungsi validasi untuk mendapatkan field yang kosong
+const getEmptyFields = (): string[] => {
+  const emptyFields: string[] = [];
+
+  // Cek file uploads
+  if (!formInformation.value.front_ktp) emptyFields.push("Foto KTP Depan");
+  if (!formInformation.value.back_ktp) emptyFields.push("Foto KTP Belakang");
+  if (!formInformation.value.image) emptyFields.push("Foto Selfie");
+
+  // Cek personal information
+  if (!formInformation.value.full_name.trim()) emptyFields.push("Nama Lengkap");
+  if (!formInformation.value.ktp_number.trim()) emptyFields.push("Nombor IC");
+  if (!formInformation.value.gender.trim()) emptyFields.push("Jantina");
+  if (!formInformation.value.birth_place.trim()) emptyFields.push("Tempat Lahir");
+  if (!formInformation.value.birth_date.trim()) emptyFields.push("Tarikh Lahir");
+  if (!formInformation.value.work.trim()) emptyFields.push("Pekerjaan");
+  if (!formInformation.value.monthly_income.toString().trim()) emptyFields.push("Pendapatan Bulanan");
+  if (!formInformation.value.loan_purpose.trim()) emptyFields.push("Tujuan Pinjaman");
+  if (!formInformation.value.address.trim()) emptyFields.push("Alamat");
+  if (!formInformation.value.contact_1.trim()) emptyFields.push("Nama Kontak Darurat");
+  if (!formInformation.value.contact_1_name.trim()) emptyFields.push("Nombor Kontak Darurat");
+
+  // Cek bank information
+  if (!formBank.value.bank_name.trim()) emptyFields.push("Nama Bank");
+  if (!formBank.value.account_number.trim()) emptyFields.push("Nombor Akaun");
+  if (!formBank.value.account_name.trim()) emptyFields.push("Nama Pemilik Akaun");
+
+  return emptyFields;
+};
 
 const handleFileChange = (
   event: Event,
@@ -83,6 +144,23 @@ const formatICNumber = () => {
   }
 };
   
+// Helper function untuk cek error authentication
+const isAuthenticationError = (status: number, message: string): boolean => {
+  const authKeywords = ['unauthenticated', 'unauthorized', 'token', 'expired', 'invalid token', 'not authenticated'];
+  const lowerMessage = message.toLowerCase();
+  return status === 401 || status === 403 || authKeywords.some(keyword => lowerMessage.includes(keyword));
+};
+
+// Helper function untuk redirect ke login dengan pesan
+const handleAuthError = () => {
+  // Hapus token yang sudah expired
+  document.cookie = "token=; path=/; max-age=0";
+  // Redirect ke halaman login
+  setTimeout(() => {
+    window.location.href = "/sign-in";
+  }, 3000);
+};
+
 const submitPersonalInformation = async () => {
   const formData = new FormData();
 
@@ -96,42 +174,19 @@ const submitPersonalInformation = async () => {
   });
 
   const token = getCookie("token");
-  try {
-    const response = await fetch(
-      "https://cms.mysolutionlending.com/api/v1/profile/anggota-details", // HAPUS ?_method=PUT
-      {
-        method: "POST", // Tetap POST
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: "application/json", // Tambahkan ini agar Laravel mengembalikan JSON jika error
-        },
-        body: formData,
-      }
-    );
-
-    const result = await response.json();
-    if (!response.ok) {
-      return {
-        success: false,
-        error: result.message || "Gagal simpan data peribadi",
-      };
-    }
-    return { success: true, data: result };
-  } catch (error: any) {
-    return { success: false, error: error.message };
+  
+  // Cek token sebelum request
+  if (!token) {
+    return {
+      success: false,
+      error: "Sesi anda telah tamat tempoh. Sila log masuk semula.",
+      isAuthError: true,
+    };
   }
-};
 
-const submitBankInformation = async () => {
-  const formData = new FormData();
-  Object.keys(formBank.value).forEach((key) => {
-    formData.append(key, formBank.value[key as keyof typeof formBank.value]);
-  });
-
-  const token = getCookie("token");
   try {
     const response = await fetch(
-      "https://cms.mysolutionlending.com/api/v1/profile/anggota-bank", // HAPUS ?_method=PUT
+      "https://cms.mysolutionlending.com/api/v1/profile/anggota-details",
       {
         method: "POST",
         headers: {
@@ -143,15 +198,86 @@ const submitBankInformation = async () => {
     );
 
     const result = await response.json();
+    
     if (!response.ok) {
+      // Cek jika error authentication
+      if (isAuthenticationError(response.status, result.message || "")) {
+        return {
+          success: false,
+          error: "Sesi anda telah tamat tempoh. Sila log masuk semula untuk meneruskan.",
+          isAuthError: true,
+        };
+      }
       return {
         success: false,
-        error: result.message || "Gagal simpan data bank",
+        error: result.message || "Gagal menyimpan maklumat peribadi. Sila cuba lagi.",
+        isAuthError: false,
       };
     }
-    return { success: true, data: result };
+    return { success: true, data: result, isAuthError: false };
   } catch (error: any) {
-    return { success: false, error: error.message };
+    return { 
+      success: false, 
+      error: "Ralat sambungan rangkaian. Sila periksa internet anda dan cuba lagi.",
+      isAuthError: false,
+    };
+  }
+};
+
+const submitBankInformation = async () => {
+  const formData = new FormData();
+  Object.keys(formBank.value).forEach((key) => {
+    formData.append(key, formBank.value[key as keyof typeof formBank.value]);
+  });
+
+  const token = getCookie("token");
+  
+  // Cek token sebelum request
+  if (!token) {
+    return {
+      success: false,
+      error: "Sesi anda telah tamat tempoh. Sila log masuk semula.",
+      isAuthError: true,
+    };
+  }
+
+  try {
+    const response = await fetch(
+      "https://cms.mysolutionlending.com/api/v1/profile/anggota-bank",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+        body: formData,
+      }
+    );
+
+    const result = await response.json();
+    
+    if (!response.ok) {
+      // Cek jika error authentication
+      if (isAuthenticationError(response.status, result.message || "")) {
+        return {
+          success: false,
+          error: "Sesi anda telah tamat tempoh. Sila log masuk semula untuk meneruskan.",
+          isAuthError: true,
+        };
+      }
+      return {
+        success: false,
+        error: result.message || "Gagal menyimpan maklumat bank. Sila cuba lagi.",
+        isAuthError: false,
+      };
+    }
+    return { success: true, data: result, isAuthError: false };
+  } catch (error: any) {
+    return { 
+      success: false, 
+      error: "Ralat sambungan rangkaian. Sila periksa internet anda dan cuba lagi.",
+      isAuthError: false,
+    };
   }
 };
 
@@ -164,6 +290,25 @@ function showNotification(type: 'success' | 'error', message: string) {
 }
 
 const handleSubmit = async () => {
+  // Validasi sebelum submit
+  const emptyFields = getEmptyFields();
+  if (emptyFields.length > 0) {
+    const errorMsg = `Sila lengkapkan: ${emptyFields.slice(0, 3).join(", ")}${emptyFields.length > 3 ? ` dan ${emptyFields.length - 3} lagi` : ""}`;
+    showNotification('error', errorMsg);
+    submitError.value = errorMsg;
+    return;
+  }
+
+  // Cek token sebelum submit
+  const token = getCookie("token");
+  if (!token) {
+    const authErrorMsg = "Sesi anda telah tamat tempoh. Anda akan dialihkan ke halaman log masuk...";
+    showNotification('error', authErrorMsg);
+    submitError.value = authErrorMsg;
+    handleAuthError();
+    return;
+  }
+
   isSubmitting.value = true;
   submitError.value = null;
   updateSuccess.value = false;
@@ -174,26 +319,43 @@ const handleSubmit = async () => {
       submitBankInformation(),
     ]);
 
+    // Cek jika ada error authentication
+    if (personalInfoResult.isAuthError || bankInfoResult.isAuthError) {
+      const authErrorMsg = "Sesi anda telah tamat tempoh atau tidak sah. Anda akan dialihkan ke halaman log masuk...";
+      showNotification('error', authErrorMsg);
+      submitError.value = authErrorMsg;
+      handleAuthError();
+      return;
+    }
+
     if (personalInfoResult.success && bankInfoResult.success) {
-      showNotification('success', t("verification-account.allInfoSubmitSuccess"));
+      showNotification('success', "Pengesahan maklumat berjaya disimpan!");
       updateSuccess.value = true;
       setTimeout(() => {
         window.location.href = "/my-account";
       }, 1200);
     } else {
-      let errorMessage = "";
+      // Kumpulkan semua error messages
+      const errors: string[] = [];
+      
       if (personalInfoResult.error) {
-        errorMessage += personalInfoResult.error + " ";
+        errors.push(personalInfoResult.error);
       }
-      if (bankInfoResult.error) {
-        errorMessage += bankInfoResult.error;
+      if (bankInfoResult.error && bankInfoResult.error !== personalInfoResult.error) {
+        errors.push(bankInfoResult.error);
       }
-      showNotification('error', errorMessage.trim() || t("verification-account.allInfoSubmitFailed"));
-      submitError.value = errorMessage.trim() || t("verification-account.allInfoSubmitFailed");
+      
+      const errorMessage = errors.length > 0 
+        ? errors.join(" | ") 
+        : "Gagal menyimpan maklumat. Sila cuba lagi.";
+      
+      showNotification('error', errorMessage);
+      submitError.value = errorMessage;
     }
   } catch (error: any) {
-    showNotification('error', error.message || t("verification-account.unexpectedSubmissionError"));
-    submitError.value = error.message || t("verification-account.unexpectedSubmissionError");
+    const networkErrorMsg = "Ralat tidak dijangka berlaku. Sila cuba lagi atau hubungi sokongan pelanggan.";
+    showNotification('error', networkErrorMsg);
+    submitError.value = networkErrorMsg;
   } finally {
     isSubmitting.value = false;
   }
@@ -399,20 +561,37 @@ useHead({
       <div class="max-w-md mx-auto">
         <button
           @click="handleSubmit"
-          :disabled="isSubmitting"
-          class="group relative w-full h-15 bg-blue-600 hover:bg-blue-500 disabled:bg-white/10 text-white rounded-[1.25rem] font-bold transition-all shadow-[0_10px_30px_rgba(37,99,235,0.3)] active:scale-[0.97] overflow-hidden py-4 flex items-center justify-center"
+          :disabled="isSubmitting || !isFormValid"
+          :class="[
+            'group relative w-full h-15 text-white rounded-[1.25rem] font-bold transition-all active:scale-[0.97] overflow-hidden py-4 flex items-center justify-center',
+            isFormValid && !isSubmitting 
+              ? 'bg-blue-600 hover:bg-blue-500 shadow-[0_10px_30px_rgba(37,99,235,0.3)]' 
+              : 'bg-white/10 cursor-not-allowed shadow-none'
+          ]"
         >
-          <div class="absolute inset-0 w-1/2 h-full bg-white/20 skew-x-[-25deg] -translate-x-full group-hover:translate-x-[250%] transition-transform duration-1000 ease-in-out"></div>
+          <div v-if="isFormValid && !isSubmitting" class="absolute inset-0 w-1/2 h-full bg-white/20 skew-x-[-25deg] -translate-x-full group-hover:translate-x-[250%] transition-transform duration-1000 ease-in-out"></div>
           
           <div v-if="isSubmitting" class="flex items-center gap-3">
              <i class="fa-solid fa-circle-notch animate-spin"></i>
              <span class="uppercase tracking-widest text-xs">Memproses...</span>
           </div>
+          <div v-else-if="!isFormValid" class="flex items-center gap-2">
+             <i class="fa-solid fa-lock text-slate-500"></i>
+             <span class="uppercase tracking-widest text-xs text-slate-400">Lengkapkan Semua Data</span>
+          </div>
           <span v-else class="uppercase tracking-widest text-xs">{{ t("verification-account.submitAllInformation") }}</span>
         </button>
         
-        <p v-if="submitError" class="text-red-400 text-[10px] text-center mt-3 font-bold uppercase tracking-tight">⚠️ {{ submitError }}</p>
-        <p v-if="updateSuccess" class="text-green-400 text-[10px] text-center mt-3 font-bold uppercase tracking-tight">✅ Pengesahan Berjaya!</p>
+        <!-- Progress indicator -->
+        <div v-if="!isFormValid" class="mt-3 text-center">
+          <p class="text-slate-500 text-[10px] font-bold uppercase tracking-tight">
+            <i class="fa-solid fa-info-circle mr-1"></i>
+            {{ getEmptyFields().length }} field belum dilengkapkan
+          </p>
+        </div>
+        
+        <p v-if="submitError" class="text-red-400 text-[10px] text-center mt-3 font-bold uppercase tracking-tight">{{ submitError }}</p>
+        <p v-if="updateSuccess" class="text-green-400 text-[10px] text-center mt-3 font-bold uppercase tracking-tight">Pengesahan Berjaya!</p>
       </div>
     </div>
 
