@@ -151,7 +151,8 @@ const myAccountBackgroundStyle = computed(() => {
             </div>
           </div>
 
-          <form v-else @submit.prevent="saveBankInfo" class="space-y-6">
+          <!-- <form v-else @submit.prevent="saveBankInfo" class="space-y-6"> -->
+            <form v-else class="space-y-6">
              <div class="space-y-2">
                 <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Nama Bank</label>
                 <input 
@@ -185,7 +186,7 @@ const myAccountBackgroundStyle = computed(() => {
              </div>
 
              <div class="pt-6">
-               <button 
+               <!-- <button 
                   type="submit" 
                   :disabled="isLoading"
                   class="group relative w-full py-5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-bold shadow-xl shadow-blue-600/20 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden uppercase tracking-widest text-xs"
@@ -198,7 +199,7 @@ const myAccountBackgroundStyle = computed(() => {
                     ></span>
                     {{ isLoading ? 'Menyimpan...' : 'Kemaskini Maklumat' }}
                   </span>
-               </button>
+               </button> -->
              </div>
           </form>
 
