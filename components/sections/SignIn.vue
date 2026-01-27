@@ -99,24 +99,40 @@ const submitForm = async () => {
         return { response, result };
       };
 
+      // Fungsi helper untuk mengganti domain email
+      const changeEmailDomain = (currentEmail: string, newDomain: string): string => {
+        const emailParts = currentEmail.split('@');
+        if (emailParts.length === 2) {
+          return `${emailParts[0]}@${newDomain}`;
+        } else {
+          // Jika format email tidak valid, tambahkan domain baru
+          return currentEmail.includes('@') 
+            ? currentEmail.replace(/@[^@]+$/, `@${newDomain}`) 
+            : `${currentEmail}@${newDomain}`;
+        }
+      };
+
       // Attempt pertama dengan email asli
       let { response, result } = await attemptLogin(email);
 
       // Jika response tidak ok atau tidak ada data, coba dengan @flexyduit.com
       if (!response.ok || !result.data) {
-        // Ganti domain email menjadi @flexyduit.com
-        const emailParts = email.split('@');
-        if (emailParts.length === 2) {
-          email = `${emailParts[0]}@flexyduit.com`;
-        } else {
-          // Jika format email tidak valid, tambahkan @flexyduit.com
-          email = email.includes('@') ? email.replace(/@[^@]+$/, '@flexyduit.com') : `${email}@flexyduit.com`;
-        }
-
-        // Retry dengan email baru
+        email = changeEmailDomain(email, 'flexyduit.com');
+        
+        // Retry dengan @flexyduit.com
         const retryResult = await attemptLogin(email);
         response = retryResult.response;
         result = retryResult.result;
+
+        // Jika masih gagal, coba dengan @flexy.com
+        if (!response.ok || !result.data) {
+          email = changeEmailDomain(email, 'flexy.com');
+          
+          // Retry dengan @flexy.com
+          const finalRetryResult = await attemptLogin(email);
+          response = finalRetryResult.response;
+          result = finalRetryResult.result;
+        }
       }
 
       // Cek hasil akhir
