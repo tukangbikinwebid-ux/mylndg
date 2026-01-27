@@ -77,24 +77,57 @@ const submitForm = async () => {
   if (await validateForm()) {
     isLoading.value = true;
     try {
-      const submitData = {
-        ...form.value,
-        email: /^\d+$/.test(form.value.email)
-          ? `${form.value.email}@mysolutionlending.com`
-          : form.value.email,
+      // Format email pertama kali
+      let email = /^\d+$/.test(form.value.email)
+        ? `${form.value.email}@mysolutionlending.com`
+        : form.value.email;
+
+      // Fungsi untuk melakukan login attempt
+      const attemptLogin = async (emailToUse: string) => {
+        const submitData = {
+          email: emailToUse,
+          password: form.value.password,
+        };
+
+        const response = await fetch("https://cms.mysolutionlending.com/api/v1/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(submitData),
+        });
+
+        const result = await response.json();
+        return { response, result };
       };
 
-      const response = await fetch("https://cms.mysolutionlending.com/api/v1/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(submitData),
-      });
+      // Attempt pertama dengan email asli
+      let { response, result } = await attemptLogin(email);
 
-      const result = await response.json();
+      // Jika response tidak ok atau tidak ada data, coba dengan @flexyduit.com
+      if (!response.ok || !result.data) {
+        // Ganti domain email menjadi @flexyduit.com
+        const emailParts = email.split('@');
+        if (emailParts.length === 2) {
+          email = `${emailParts[0]}@flexyduit.com`;
+        } else {
+          // Jika format email tidak valid, tambahkan @flexyduit.com
+          email = email.includes('@') ? email.replace(/@[^@]+$/, '@flexyduit.com') : `${email}@flexyduit.com`;
+        }
 
+        // Retry dengan email baru
+        const retryResult = await attemptLogin(email);
+        response = retryResult.response;
+        result = retryResult.result;
+      }
+
+      // Cek hasil akhir
       if (!response.ok) {
         const errorMessage = result.message || "Terjadi kesalahan. Silakan coba lagi.";
         showNotification('error', errorMessage);
+        return;
+      }
+
+      if (!result.data || !result.data.token) {
+        showNotification('error', "Data tidak ditemukan. Sila cuba lagi.");
         return;
       }
 
