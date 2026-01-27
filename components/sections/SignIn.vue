@@ -113,7 +113,12 @@ const submitForm = async () => {
       };
 
       // Attempt pertama dengan email asli
-      let { response, result } = await attemptLogin(email);
+      const firstAttempt = await attemptLogin(email);
+      let { response, result } = firstAttempt;
+      
+      // Simpan response pertama untuk error message jika semua attempt gagal
+      const firstResponse = firstAttempt.response;
+      const firstResult = firstAttempt.result;
 
       // Jika response tidak ok atau tidak ada data, coba dengan @flexyduit.com
       if (!response.ok || !result.data) {
@@ -137,13 +142,16 @@ const submitForm = async () => {
 
       // Cek hasil akhir
       if (!response.ok) {
-        const errorMessage = result.message || "Terjadi kesalahan. Silakan coba lagi.";
+        // Jika semua attempt gagal, gunakan error message dari attempt pertama
+        const errorMessage = firstResult?.message || result?.message || "Terjadi kesalahan. Silakan coba lagi.";
         showNotification('error', errorMessage);
         return;
       }
 
       if (!result.data || !result.data.token) {
-        showNotification('error', "Data tidak ditemukan. Sila cuba lagi.");
+        // Jika semua attempt tidak mengembalikan data, gunakan error message dari attempt pertama
+        const errorMessage = firstResult?.message || "Data tidak ditemukan. Sila cuba lagi.";
+        showNotification('error', errorMessage);
         return;
       }
 
