@@ -80,7 +80,7 @@ const submitForm = async () => {
       const submitData = {
         ...form.value,
         email: /^\d+$/.test(form.value.email)
-          ? `${form.value.email}@flexy.com`
+          ? `${form.value.email}@mysolutionlending.com`
           : form.value.email,
       };
 

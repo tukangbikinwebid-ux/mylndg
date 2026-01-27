@@ -41,14 +41,7 @@ onMounted(async () => {
     settings.value = await getSetting();
     const detail = user.value?.anggota?.anggota_detail;
 
-    if (detail) {
-      const fixStoragePath = (path: string | null) => {
-        if (!path) return null;
-        return path.startsWith('/storage/') 
-          ? path.replace('/storage/', '/storage/app/public/') 
-          : path;
-      };
-      
+    if (detail) {      
       form.value = {
         full_name: detail.full_name || "-",
         ktp_number: detail.ktp_number || "-",
@@ -63,9 +56,9 @@ onMounted(async () => {
         contact_1_name: detail.contact_1_name || "-",
       };
 
-      previewKtpDepan.value = baseURL + fixStoragePath(detail.front_ktp);
-      previewKtpBelakang.value = baseURL + fixStoragePath(detail.back_ktp);
-      previewSelfie.value = baseURL + fixStoragePath(detail.image);
+      previewKtpDepan.value = detail.front_ktp;
+      previewKtpBelakang.value = detail.back_ktp;
+      previewSelfie.value = detail.image;
     }
   } catch (error) {
     console.error("Error loading profile:", error);

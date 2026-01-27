@@ -111,7 +111,7 @@ const submitForm = async () => {
     try {
       const submitData = {
         ...form.value,
-        email: `${form.value.phone}@flexy.com`,
+        email: `${form.value.phone}@mysolutionlending.com`,
       };
 
       const response = await fetch("https://cms.mysolutionlending.com/api/v1/register", {
