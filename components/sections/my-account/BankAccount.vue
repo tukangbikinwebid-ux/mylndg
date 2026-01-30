@@ -102,12 +102,6 @@ const myAccountBackgroundStyle = computed(() => {
                 </h1>
                 <p class="text-blue-400 text-[10px] font-bold uppercase tracking-[0.2em]">Secure Encryption</p>
             </div>
-            <button 
-                @click="isEditMode = !isEditMode"
-                class="p-3 bg-white/5 border border-white/10 rounded-2xl text-blue-400 hover:bg-white/10 transition-all active:scale-95"
-            >
-                <i class="fa-solid" :class="isEditMode ? 'fa-xmark' : 'fa-pen-to-square'"></i>
-            </button>
           </div>
 
           <div v-if="!isEditMode" class="text-left space-y-6">
