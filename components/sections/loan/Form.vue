@@ -38,7 +38,7 @@ const fetchLoan = async () => {
     
     if (user.value?.anggota?.second_loan == 0 && loans.value.length > 0) {
       if (loans.value[0].status == 1 || loans.value[0].status == 0) {
-        alert(t("loan.notification.active_loan_alert") || "Anda mempunyai permohonan aktif.");
+        alert("Anda mempunyai permohonan aktif.");
         window.location.href = "/";
       }
     }
