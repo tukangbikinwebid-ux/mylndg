@@ -67,35 +67,49 @@ const changeLocale = (code: string) => {
 const validateForm = async (): Promise<boolean> => {
   errors.value = {};
   if (!form.value.name) errors.value.name = "Nama wajib diisi";
-  
+  else if (/\s/.test(form.value.name)) errors.value.name = "Nama tidak boleh mengandungi ruang";
+
   if (!form.value.phone) {
     errors.value.phone = "Nombor telefon wajib diisi";
   } else {
-    const myPhoneRegex = /^01[0-46-9][0-9]{7,8}$/;
-    if (!myPhoneRegex.test(form.value.phone)) {
-      errors.value.phone = "Format nombor tidak sah (Cth: 0123456789)";
+    if (/\s/.test(form.value.phone)) {
+      errors.value.phone = "Nombor telefon tidak boleh mengandungi ruang";
+    } else {
+      const myPhoneRegex = /^01[0-46-9][0-9]{7,8}$/;
+      if (!myPhoneRegex.test(form.value.phone)) {
+        errors.value.phone = "Format nombor tidak sah (Cth: 0123456789)";
+      }
     }
   }
 
   if (!form.value.password) {
     errors.value.password = "Kata laluan wajib diisi";
+  } else if (/\s/.test(form.value.password)) {
+    errors.value.password = "Kata laluan tidak boleh mengandungi ruang";
   } else if (form.value.password.length < 6) {
     errors.value.password = "Kata laluan minimal 6 karakter";
   }
 
-  if (form.value.password !== form.value.password_confirmation) {
+  if (/\s/.test(form.value.password_confirmation)) {
+    errors.value.password_confirmation = "Kata laluan tidak boleh mengandungi ruang";
+  } else if (form.value.password !== form.value.password_confirmation) {
     errors.value.password_confirmation = "Kata laluan tidak sepadan";
   }
 
   return Object.keys(errors.value).length === 0;
 };
 
-const handlePhoneInput = (e: Event) => {
-  let val = form.value.phone.replace(/\D/g, '');
+const handlePhoneInput = () => {
+  let val = form.value.phone.replace(/\D/g, '').replace(/\s/g, '');
   if (val.startsWith('60')) {
     val = '0' + val.substring(2);
   }
   form.value.phone = val;
+};
+
+const stripSpaces = (field: 'name' | 'password' | 'password_confirmation') => (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  form.value[field] = target.value.replace(/\s/g, '');
 };
 
 function showNotification(type: 'success' | 'error', message: string) {
@@ -179,9 +193,10 @@ const submitForm = async () => {
             <input
               v-model="form.name"
               type="text"
-              placeholder="Contoh: Ahmad Ali"
+              placeholder="Contoh: AhmadAli"
               class="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-blue-500/50 focus:bg-white/10 outline-none transition-all text-white placeholder:text-slate-600"
               :class="{ 'border-red-500/50 bg-red-500/5': errors.name }"
+              @input="stripSpaces('name')"
             />
             <p v-if="errors.name" class="text-red-400 text-xs mt-1.5 ml-1">{{ errors.name }}</p>
           </div>
@@ -209,6 +224,7 @@ const submitForm = async () => {
                 placeholder="••••••••"
                 class="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-blue-500/50 focus:bg-white/10 outline-none transition-all text-white placeholder:text-slate-600 pr-12"
                 :class="{ 'border-red-500/50 bg-red-500/5': errors.password }"
+                @input="stripSpaces('password')"
               />
               <button
                 type="button"
@@ -235,6 +251,7 @@ const submitForm = async () => {
                 placeholder="••••••••"
                 class="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-blue-500/50 focus:bg-white/10 outline-none transition-all text-white placeholder:text-slate-600 pr-12"
                 :class="{ 'border-red-500/50 bg-red-500/5': errors.password_confirmation }"
+                @input="stripSpaces('password_confirmation')"
               />
               <button
                 type="button"

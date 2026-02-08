@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { getUserData, getSetting } from "@/composables/utils";
-import { ref, onMounted, computed } from "vue";
+import { getUserData, getSetting, getCookie } from "@/composables/utils";
+import { ref, onMounted, computed, nextTick, watch } from "vue";
 
 const { t } = useI18n();
 const titleMenu = computed(() => `${t("verification-account.title-menu")}`);
@@ -37,65 +37,61 @@ const formBank = ref({
   account_name: "",
 });
 
+// Helper: cek value kosong (handle null, undefined, string kosong, number 0 valid)
+const isEmpty = (val: unknown, isNumber = false): boolean => {
+  if (val === null || val === undefined) return true;
+  if (val instanceof File) return false;
+  if (typeof val === "number") return false;
+  const str = String(val ?? "").trim();
+  return str === "";
+};
+
+// Konfigurasi field untuk validasi konsisten (key, label, getter)
+const FIELD_CONFIG = [
+  { key: "front_ktp", label: "Foto KTP Depan", getVal: () => formInformation.value.front_ktp },
+  { key: "back_ktp", label: "Foto KTP Belakang", getVal: () => formInformation.value.back_ktp },
+  { key: "image", label: "Foto Selfie", getVal: () => formInformation.value.image },
+  { key: "full_name", label: "Nama Lengkap", getVal: () => formInformation.value.full_name },
+  { key: "ktp_number", label: "Nombor IC", getVal: () => formInformation.value.ktp_number },
+  { key: "gender", label: "Jantina", getVal: () => formInformation.value.gender },
+  { key: "birth_place", label: "Tempat Lahir", getVal: () => formInformation.value.birth_place },
+  { key: "birth_date", label: "Tarikh Lahir", getVal: () => formInformation.value.birth_date },
+  { key: "work", label: "Pekerjaan", getVal: () => formInformation.value.work },
+  { key: "monthly_income", label: "Pendapatan Bulanan", getVal: () => formInformation.value.monthly_income, isNumber: true },
+  { key: "loan_purpose", label: "Tujuan Pinjaman", getVal: () => formInformation.value.loan_purpose },
+  { key: "address", label: "Alamat", getVal: () => formInformation.value.address },
+  { key: "contact_1", label: "Nama Kontak Darurat", getVal: () => formInformation.value.contact_1 },
+  { key: "contact_1_name", label: "Nombor Kontak Darurat", getVal: () => formInformation.value.contact_1_name },
+  { key: "bank_name", label: "Nama Bank", getVal: () => formBank.value.bank_name },
+  { key: "account_number", label: "Nombor Akaun", getVal: () => formBank.value.account_number },
+  { key: "account_name", label: "Nama Pemilik Akaun", getVal: () => formBank.value.account_name },
+];
+
+// Daftar field yang kosong beserta label
+const emptyFieldsList = computed(() =>
+  FIELD_CONFIG.filter((f) => isEmpty(f.getVal(), f.isNumber)).map((f) => ({ key: f.key, label: f.label }))
+);
+
 // Computed property untuk cek apakah semua field sudah terisi
-const isFormValid = computed(() => {
-  // Cek file uploads (wajib semua)
-  const filesValid = 
-    formInformation.value.front_ktp !== null &&
-    formInformation.value.back_ktp !== null &&
-    formInformation.value.image !== null;
+const isFormValid = computed(() => emptyFieldsList.value.length === 0);
 
-  // Cek personal information (wajib semua)
-  const personalInfoValid = 
-    formInformation.value.full_name.trim() !== "" &&
-    formInformation.value.ktp_number.trim() !== "" &&
-    formInformation.value.gender.trim() !== "" &&
-    formInformation.value.birth_place.trim() !== "" &&
-    formInformation.value.birth_date.trim() !== "" &&
-    formInformation.value.work.trim() !== "" &&
-    formInformation.value.monthly_income.toString().trim() !== "" &&
-    formInformation.value.loan_purpose.trim() !== "" &&
-    formInformation.value.address.trim() !== "" &&
-    formInformation.value.contact_1.trim() !== "" &&
-    formInformation.value.contact_1_name.trim() !== "";
+// Fungsi validasi untuk mendapatkan field yang kosong (untuk pesan error)
+const getEmptyFields = (): string[] => emptyFieldsList.value.map((f) => f.label);
 
-  // Cek bank information (wajib semua)
-  const bankInfoValid = 
-    formBank.value.bank_name.trim() !== "" &&
-    formBank.value.account_number.trim() !== "" &&
-    formBank.value.account_name.trim() !== "";
+// Cek field tertentu kosong (untuk highlight input)
+const isFieldEmpty = (key: string): boolean =>
+  FIELD_CONFIG.some((f) => f.key === key && isEmpty(f.getVal(), f.isNumber));
 
-  return filesValid && personalInfoValid && bankInfoValid;
+const showValidationErrors = ref(false);
+watch(isFormValid, (valid) => {
+  if (valid) showValidationErrors.value = false;
 });
-
-// Fungsi validasi untuk mendapatkan field yang kosong
-const getEmptyFields = (): string[] => {
-  const emptyFields: string[] = [];
-
-  // Cek file uploads
-  if (!formInformation.value.front_ktp) emptyFields.push("Foto KTP Depan");
-  if (!formInformation.value.back_ktp) emptyFields.push("Foto KTP Belakang");
-  if (!formInformation.value.image) emptyFields.push("Foto Selfie");
-
-  // Cek personal information
-  if (!formInformation.value.full_name.trim()) emptyFields.push("Nama Lengkap");
-  if (!formInformation.value.ktp_number.trim()) emptyFields.push("Nombor IC");
-  if (!formInformation.value.gender.trim()) emptyFields.push("Jantina");
-  if (!formInformation.value.birth_place.trim()) emptyFields.push("Tempat Lahir");
-  if (!formInformation.value.birth_date.trim()) emptyFields.push("Tarikh Lahir");
-  if (!formInformation.value.work.trim()) emptyFields.push("Pekerjaan");
-  if (!formInformation.value.monthly_income.toString().trim()) emptyFields.push("Pendapatan Bulanan");
-  if (!formInformation.value.loan_purpose.trim()) emptyFields.push("Tujuan Pinjaman");
-  if (!formInformation.value.address.trim()) emptyFields.push("Alamat");
-  if (!formInformation.value.contact_1.trim()) emptyFields.push("Nama Kontak Darurat");
-  if (!formInformation.value.contact_1_name.trim()) emptyFields.push("Nombor Kontak Darurat");
-
-  // Cek bank information
-  if (!formBank.value.bank_name.trim()) emptyFields.push("Nama Bank");
-  if (!formBank.value.account_number.trim()) emptyFields.push("Nombor Akaun");
-  if (!formBank.value.account_name.trim()) emptyFields.push("Nama Pemilik Akaun");
-
-  return emptyFields;
+const scrollToFirstError = () => {
+  showValidationErrors.value = true;
+  nextTick(() => {
+    const firstInvalid = document.querySelector("[data-invalid-field]");
+    firstInvalid?.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
 };
 
 const handleFileChange = (
@@ -290,14 +286,18 @@ function showNotification(type: 'success' | 'error', message: string) {
 }
 
 const handleSubmit = async () => {
-  // Validasi sebelum submit
   const emptyFields = getEmptyFields();
   if (emptyFields.length > 0) {
-    const errorMsg = `Sila lengkapkan: ${emptyFields.slice(0, 3).join(", ")}${emptyFields.length > 3 ? ` dan ${emptyFields.length - 3} lagi` : ""}`;
-    showNotification('error', errorMsg);
+    const errorMsg =
+      emptyFields.length === 1
+        ? `Sila lengkapkan: ${emptyFields[0]}`
+        : `Sila lengkapkan ${emptyFields.length} medan: ${emptyFields.join(", ")}`;
+    showNotification("error", errorMsg);
     submitError.value = errorMsg;
+    scrollToFirstError();
     return;
   }
+  showValidationErrors.value = false;
 
   // Cek token sebelum submit
   const token = getCookie("token");
@@ -425,9 +425,9 @@ useHead({
           </div>
 
           <div class="grid grid-cols-1 gap-5">
-            <div class="space-y-2">
+            <div class="space-y-2" :data-invalid-field="showValidationErrors && isFieldEmpty('front_ktp') ? 'front_ktp' : undefined">
               <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">{{ t("verification-account.frontIdCard") }}</label>
-              <div @click="$refs.frontKtpInput.click()" class="upload-box-glossy group">
+              <div @click="$refs.frontKtpInput.click()" class="upload-box-glossy group" :class="{ 'ring-2 ring-red-500/60 border-red-500/40': showValidationErrors && isFieldEmpty('front_ktp') }">
                 <img v-if="previewKtpDepan" :src="previewKtpDepan" class="absolute inset-0 w-full h-full object-cover" />
                 <div v-else class="text-center">
                   <div class="icon-circle-glossy"><i class="fa-solid fa-id-card text-blue-400 text-lg"></i></div>
@@ -437,9 +437,9 @@ useHead({
               </div>
             </div>
 
-            <div class="space-y-2">
+            <div class="space-y-2" :data-invalid-field="showValidationErrors && isFieldEmpty('back_ktp') ? 'back_ktp' : undefined">
               <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">{{ t("verification-account.backIdCard") }}</label>
-              <div @click="$refs.backKtpInput.click()" class="upload-box-glossy group">
+              <div @click="$refs.backKtpInput.click()" class="upload-box-glossy group" :class="{ 'ring-2 ring-red-500/60 border-red-500/40': showValidationErrors && isFieldEmpty('back_ktp') }">
                 <img v-if="previewKtpBelakang" :src="previewKtpBelakang" class="absolute inset-0 w-full h-full object-cover" />
                 <div v-else class="text-center">
                   <div class="icon-circle-glossy"><i class="fa-solid fa-address-card text-blue-400 text-lg"></i></div>
@@ -449,9 +449,9 @@ useHead({
               </div>
             </div>
 
-            <div class="space-y-2">
+            <div class="space-y-2" :data-invalid-field="showValidationErrors && isFieldEmpty('image') ? 'image' : undefined">
               <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">{{ t("verification-account.selfieWithPhoto") }}</label>
-              <div @click="$refs.imageInput.click()" class="upload-box-glossy group">
+              <div @click="$refs.imageInput.click()" class="upload-box-glossy group" :class="{ 'ring-2 ring-red-500/60 border-red-500/40': showValidationErrors && isFieldEmpty('image') }">
                 <img v-if="previewSelfie" :src="previewSelfie" class="absolute inset-0 w-full h-full object-cover" />
                 <div v-else class="text-center">
                   <div class="icon-circle-glossy"><i class="fa-solid fa-camera-retro text-blue-400 text-lg"></i></div>
@@ -470,19 +470,19 @@ useHead({
           </h3>
 
           <div class="space-y-6">
-            <div class="form-group-dark">
+            <div class="form-group-dark" :data-invalid-field="showValidationErrors && isFieldEmpty('full_name') ? 'full_name' : undefined">
               <label class="label-dark">{{ t("verification-account.fullName") }}</label>
-              <input v-model="formInformation.full_name" type="text" :placeholder="t('verification-account.enterFullName')" class="modern-input-dark" />
+              <input v-model="formInformation.full_name" type="text" :placeholder="t('verification-account.enterFullName')" class="modern-input-dark" :class="{ 'border-red-500/60 ring-2 ring-red-500/30': showValidationErrors && isFieldEmpty('full_name') }" />
             </div>
 
-            <div class="form-group-dark">
+            <div class="form-group-dark" :data-invalid-field="showValidationErrors && isFieldEmpty('ktp_number') ? 'ktp_number' : undefined">
               <label class="label-dark">{{ t("verification-account.icNumberFormat") }}</label>
-              <input v-model="formInformation.ktp_number" type="text" class="modern-input-dark font-mono" @input="formatICNumber" />
+              <input v-model="formInformation.ktp_number" type="text" class="modern-input-dark font-mono" @input="formatICNumber" :class="{ 'border-red-500/60 ring-2 ring-red-500/30': showValidationErrors && isFieldEmpty('ktp_number') }" />
             </div>
 
-            <div class="form-group-dark">
+            <div class="form-group-dark" :data-invalid-field="showValidationErrors && isFieldEmpty('gender') ? 'gender' : undefined">
               <label class="label-dark">{{ t("verification-account.gender") }}</label>
-              <div class="grid grid-cols-2 gap-3 mt-2">
+              <div class="grid grid-cols-2 gap-3 mt-2" :class="{ 'ring-2 ring-red-500/40 rounded-xl p-0.5 -m-0.5': showValidationErrors && isFieldEmpty('gender') }">
                 <button 
                   v-for="g in ['male', 'female']" :key="g"
                   @click="formInformation.gender = g"
@@ -494,44 +494,44 @@ useHead({
             </div>
 
             <div class="grid grid-cols-2 gap-4">
-              <div class="form-group-dark">
+              <div class="form-group-dark" :data-invalid-field="showValidationErrors && isFieldEmpty('birth_place') ? 'birth_place' : undefined">
                 <label class="label-dark">{{ t("verification-account.birthPlace") }}</label>
-                <input v-model="formInformation.birth_place" type="text" class="modern-input-dark" />
+                <input v-model="formInformation.birth_place" type="text" class="modern-input-dark" :class="{ 'border-red-500/60 ring-2 ring-red-500/30': showValidationErrors && isFieldEmpty('birth_place') }" />
               </div>
-              <div class="form-group-dark">
+              <div class="form-group-dark" :data-invalid-field="showValidationErrors && isFieldEmpty('birth_date') ? 'birth_date' : undefined">
                 <label class="label-dark">{{ t("verification-account.birthDate") }}</label>
-                <input v-model="formInformation.birth_date" type="date" class="modern-input-dark" />
+                <input v-model="formInformation.birth_date" type="date" class="modern-input-dark" :class="{ 'border-red-500/60 ring-2 ring-red-500/30': showValidationErrors && isFieldEmpty('birth_date') }" />
               </div>
             </div>
 
-            <div class="form-group-dark">
+            <div class="form-group-dark" :data-invalid-field="showValidationErrors && isFieldEmpty('work') ? 'work' : undefined">
               <label class="label-dark">{{ t("verification-account.work") }}</label>
-              <input v-model="formInformation.work" type="text" class="modern-input-dark" />
+              <input v-model="formInformation.work" type="text" class="modern-input-dark" :class="{ 'border-red-500/60 ring-2 ring-red-500/30': showValidationErrors && isFieldEmpty('work') }" />
             </div>
 
-            <div class="form-group-dark">
+            <div class="form-group-dark" :data-invalid-field="showValidationErrors && isFieldEmpty('monthly_income') ? 'monthly_income' : undefined">
               <label class="label-dark">{{ t("verification-account.monthlyIncome") }} (RM)</label>
-              <input v-model="formInformation.monthly_income" type="number" class="modern-input-dark" />
+              <input v-model="formInformation.monthly_income" type="number" class="modern-input-dark" :class="{ 'border-red-500/60 ring-2 ring-red-500/30': showValidationErrors && isFieldEmpty('monthly_income') }" />
             </div>
 
-            <div class="form-group-dark">
+            <div class="form-group-dark" :data-invalid-field="showValidationErrors && isFieldEmpty('address') ? 'address' : undefined">
               <label class="label-dark">{{ t("verification-account.address") }}</label>
-              <textarea v-model="formInformation.address" rows="3" class="modern-input-dark resize-none"></textarea>
+              <textarea v-model="formInformation.address" rows="3" class="modern-input-dark resize-none" :class="{ 'border-red-500/60 ring-2 ring-red-500/30': showValidationErrors && isFieldEmpty('address') }"></textarea>
             </div>
 
-            <div class="form-group-dark">
+            <div class="form-group-dark" :data-invalid-field="showValidationErrors && isFieldEmpty('loan_purpose') ? 'loan_purpose' : undefined">
               <label class="label-dark">{{ t("verification-account.loanPurpose") }}</label>
-              <input v-model="formInformation.loan_purpose" type="text" class="modern-input-dark" />
+              <input v-model="formInformation.loan_purpose" type="text" class="modern-input-dark" :class="{ 'border-red-500/60 ring-2 ring-red-500/30': showValidationErrors && isFieldEmpty('loan_purpose') }" />
             </div>
 
-            <div class="border-t border-white/5 pt-4">
+            <div class="border-t border-white/5 pt-4" :data-invalid-field="showValidationErrors && isFieldEmpty('contact_1') ? 'contact_1' : undefined">
                <label class="label-dark">Nama Kontak Darurat</label>
-               <input v-model="formInformation.contact_1" type="text" class="modern-input-dark" />
+               <input v-model="formInformation.contact_1" type="text" class="modern-input-dark" :class="{ 'border-red-500/60 ring-2 ring-red-500/30': showValidationErrors && isFieldEmpty('contact_1') }" />
             </div>
 
-            <div class="form-group-dark">
+            <div class="form-group-dark" :data-invalid-field="showValidationErrors && isFieldEmpty('contact_1_name') ? 'contact_1_name' : undefined">
                <label class="label-dark">Nombor Kontak Darurat</label>
-               <input v-model="formInformation.contact_1_name" type="tel" class="modern-input-dark font-mono" maxlength="13" @input="formInformation.contact_1_name = formInformation.contact_1_name.replace(/\D/g, '')" />
+               <input v-model="formInformation.contact_1_name" type="tel" class="modern-input-dark font-mono" maxlength="13" @input="formInformation.contact_1_name = formInformation.contact_1_name.replace(/\D/g, '')" :class="{ 'border-red-500/60 ring-2 ring-red-500/30': showValidationErrors && isFieldEmpty('contact_1_name') }" />
             </div>
           </div>
         </div>
@@ -548,9 +548,9 @@ useHead({
           </div>
 
           <div class="space-y-6">
-            <div class="form-group-dark" v-for="field in ['bank_name', 'account_number', 'account_name']" :key="field">
+            <div class="form-group-dark" v-for="field in (['bank_name', 'account_number', 'account_name'] as const)" :key="field" :data-invalid-field="showValidationErrors && isFieldEmpty(field) ? field : undefined">
               <label class="label-dark">{{ t(`verification-account.${field === 'bank_name' ? 'branchBank' : field === 'account_number' ? 'accountNumberBank' : 'accountName'}`) }}</label>
-              <input v-model="formBank[field]" type="text" class="modern-input-dark" required />
+              <input v-model="formBank[field]" type="text" class="modern-input-dark" :class="{ 'border-red-500/60 ring-2 ring-red-500/30': showValidationErrors && isFieldEmpty(field) }" />
             </div>
           </div>
         </div>
@@ -582,11 +582,14 @@ useHead({
           <span v-else class="uppercase tracking-widest text-xs">{{ t("verification-account.submitAllInformation") }}</span>
         </button>
         
-        <!-- Progress indicator -->
-        <div v-if="!isFormValid" class="mt-3 text-center">
-          <p class="text-slate-500 text-[10px] font-bold uppercase tracking-tight">
+        <!-- Progress indicator - tunjukkan field yang belum lengkap -->
+        <div v-if="!isFormValid" class="mt-3 px-1">
+          <p class="text-slate-400 text-[10px] font-bold uppercase tracking-tight mb-1.5">
             <i class="fa-solid fa-info-circle mr-1"></i>
-            {{ getEmptyFields().length }} field belum dilengkapkan
+            {{ emptyFieldsList.length }} medan belum dilengkapkan:
+          </p>
+          <p class="text-slate-500 text-[11px] leading-relaxed">
+            {{ emptyFieldsList.map(f => f.label).join(" • ") }}
           </p>
         </div>
         

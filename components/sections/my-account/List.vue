@@ -70,8 +70,25 @@ const handleLogout = () => {
 
       <AtomsContainer class="mt-24 px-5">
         
+        <!-- Loading skeleton - tampil hanya saat data belum siap -->
         <div
-          v-if="status"
+          v-if="isLoading"
+          class="animate-enter relative overflow-hidden bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-2xl rounded-[2.5rem] p-8 mb-10"
+        >
+          <div class="flex justify-between items-center">
+            <div class="space-y-2">
+              <div class="h-3 w-24 bg-white/10 rounded animate-pulse"></div>
+              <div class="h-12 w-20 bg-white/10 rounded animate-pulse"></div>
+              <div class="h-6 w-24 bg-white/10 rounded-full animate-pulse"></div>
+            </div>
+            <div class="w-14 h-14 bg-white/10 rounded-3xl animate-pulse"></div>
+          </div>
+          <div class="mt-6 h-3 w-32 bg-white/10 rounded animate-pulse"></div>
+        </div>
+
+        <!-- Credit score - tampil setelah load & user terverifikasi -->
+        <div
+          v-else-if="status"
           class="animate-enter relative overflow-hidden bg-gradient-to-br from-blue-600/20 to-indigo-900/40 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-[2.5rem] p-8 mb-10"
         >
           <div class="absolute -right-6 -top-6 w-32 h-32 bg-blue-500/10 blur-3xl rounded-full"></div>
@@ -93,6 +110,7 @@ const handleLogout = () => {
           <p class="mt-6 text-slate-500 text-[10px] italic">Terakhir dikemaskini hari ini</p>
         </div>
 
+        <!-- Pengesahan diperlukan - tampil setelah load & user belum terverifikasi -->
         <div
           v-else
           class="animate-enter bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-2xl rounded-[2.5rem] p-8 mb-10"

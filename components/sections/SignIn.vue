@@ -64,13 +64,32 @@ const changeLocale = (code: string) => {
 
 const validateForm = async (): Promise<boolean> => {
   errors.value = {};
-  if (!form.value.email) errors.value.email = "Sila masukkan nombor telefon";
+  if (!form.value.email) {
+    errors.value.email = "Sila masukkan nombor telefon";
+  } else if (/\s/.test(form.value.email)) {
+    errors.value.email = "Nombor telefon tidak boleh mengandungi ruang";
+  } else if (/^\d+$/.test(form.value.email)) {
+    const myPhoneRegex = /^01[0-46-9][0-9]{7,8}$/;
+    const phone = form.value.email.startsWith("60") ? "0" + form.value.email.slice(2) : form.value.email;
+    if (!myPhoneRegex.test(phone)) {
+      errors.value.email = "Format nombor tidak sah (Cth: 0123456789)";
+    }
+  }
   if (!form.value.password) {
     errors.value.password = "Password wajib diisi";
   } else if (form.value.password.length < 6) {
     errors.value.password = "Password minimal 6 karakter";
   }
   return Object.keys(errors.value).length === 0;
+};
+
+const handlePhoneInput = () => {
+  let val = form.value.email.replace(/\s/g, "");
+  if (!val.includes("@")) {
+    val = val.replace(/\D/g, "");
+    if (val.startsWith("60")) val = "0" + val.slice(2);
+  }
+  form.value.email = val;
 };
 
 const submitForm = async () => {
@@ -237,6 +256,7 @@ const submitForm = async () => {
                 placeholder="0123456789"
                 class="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 focus:bg-white/10 outline-none transition-all text-white placeholder:text-slate-500"
                 :class="{ 'border-red-500/50 bg-red-500/5': errors.email }"
+                @input="handlePhoneInput"
               />
             </div>
             <transition name="fade">
