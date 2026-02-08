@@ -550,7 +550,14 @@ useHead({
           <div class="space-y-6">
             <div class="form-group-dark" v-for="field in (['bank_name', 'account_number', 'account_name'] as const)" :key="field" :data-invalid-field="showValidationErrors && isFieldEmpty(field) ? field : undefined">
               <label class="label-dark">{{ t(`verification-account.${field === 'bank_name' ? 'branchBank' : field === 'account_number' ? 'accountNumberBank' : 'accountName'}`) }}</label>
-              <input v-model="formBank[field]" type="text" class="modern-input-dark" :class="{ 'border-red-500/60 ring-2 ring-red-500/30': showValidationErrors && isFieldEmpty(field) }" />
+              <input
+                :value="formBank[field]"
+                type="text"
+                class="modern-input-dark"
+                :class="{ 'border-red-500/60 ring-2 ring-red-500/30': showValidationErrors && isFieldEmpty(field) }"
+                :inputmode="field === 'account_number' ? 'numeric' : undefined"
+                @input="(e) => formBank[field] = field === 'account_number' ? (e.target as HTMLInputElement).value.replace(/\s/g, '') : (e.target as HTMLInputElement).value"
+              />
             </div>
           </div>
         </div>
