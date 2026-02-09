@@ -186,14 +186,14 @@ watchEffect(() => {
     // --- MODIFIKASI UNTUK GAMBAR SEJAJAR ---
     let signatureHtml = "";
     if (loans.value && loans.value.signature) {
-      const imageUrl = "https://cms.flexyduit.com" + loans.value.signature;
+      const imageUrl = loans.value.signature;
       signatureHtml = `<img src="${imageUrl}" alt="Signature" style="max-width: 60px; height: auto; display: inline-block; vertical-align: middle; margin-right: 15px;" />`;
     }
     agreementText = agreementText.replace(/\{signature\}/g, signatureHtml);
 
     let stampHtml = "";
     if (dataSettings.value && dataSettings.value.stamp) {
-      const imageUrl = "https://cms.flexyduit.com" + dataSettings.value.stamp;
+      const imageUrl = dataSettings.value.stamp;
       stampHtml = `<img src="${imageUrl}" alt="Stamp" style="max-width: 60px; height: auto; display: inline-block; vertical-align: middle;" />`;
     }
     // --- AKHIR MODIFIKASI ---
