@@ -30,6 +30,38 @@ const previewKtpDepan = ref<string | null>(null);
 const previewKtpBelakang = ref<string | null>(null);
 const previewSelfie = ref<string | null>(null);
 
+// Dropdown birth date
+const birthDay = ref("");
+const birthMonth = ref("");
+const birthYear = ref("");
+
+const dayOptions = Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, "0"));
+const monthOptions = [
+  { value: "01", label: "Januari" },
+  { value: "02", label: "Februari" },
+  { value: "03", label: "Mac" },
+  { value: "04", label: "April" },
+  { value: "05", label: "Mei" },
+  { value: "06", label: "Jun" },
+  { value: "07", label: "Julai" },
+  { value: "08", label: "Ogos" },
+  { value: "09", label: "September" },
+  { value: "10", label: "Oktober" },
+  { value: "11", label: "November" },
+  { value: "12", label: "Disember" },
+];
+const currentYear = new Date().getFullYear();
+const yearOptions = Array.from({ length: currentYear - 1939 }, (_, i) => String(currentYear - i));
+
+// Gabungkan dropdown ke birth_date saat berubah
+watch([birthDay, birthMonth, birthYear], ([d, m, y]) => {
+  if (d && m && y) {
+    formInformation.value.birth_date = `${y}-${m}-${d}`;
+  } else {
+    formInformation.value.birth_date = "";
+  }
+});
+
 // Form data for bank account information
 const formBank = ref({
   bank_name: "",
@@ -203,41 +235,6 @@ const handleFileChange = async (
   }
 };
 
-const formatBirthDate = () => {
-  let value = formInformation.value.birth_date.replace(/\D/g, "");
-
-  // Limit ke 8 digit (DDMMYYYY)
-  if (value.length > 8) value = value.slice(0, 8);
-
-  let formatted = "";
-  if (value.length > 0) {
-    // DD
-    let day = value.slice(0, 2);
-    if (day.length === 2) {
-      const d = parseInt(day, 10);
-      if (d > 31) day = "31";
-      if (d === 0) day = "01";
-    }
-    formatted += day;
-    if (value.length > 2) {
-      // MM
-      let month = value.slice(2, 4);
-      if (month.length === 2) {
-        const m = parseInt(month, 10);
-        if (m > 12) month = "12";
-        if (m === 0) month = "01";
-      }
-      formatted += "/" + month;
-      if (value.length > 4) {
-        // YYYY
-        formatted += "/" + value.slice(4, 8);
-      }
-    }
-  }
-
-  formInformation.value.birth_date = formatted;
-};
-
 const formatICNumber = () => {
   let value = formInformation.value.ktp_number.replace(/\D/g, "");
   let formattedValue = "";
@@ -284,16 +281,9 @@ const submitPersonalInformation = async () => {
 
   // Append data ke FormData
   Object.keys(formInformation.value).forEach((key) => {
-    let value =
+    const value =
       formInformation.value[key as keyof typeof formInformation.value];
     if (value !== null) {
-      // Konversi DD/MM/YYYY ke YYYY-MM-DD untuk API
-      if (key === "birth_date" && typeof value === "string") {
-        const parts = value.split("/");
-        if (parts.length === 3) {
-          value = `${parts[2]}-${parts[1]}-${parts[0]}`;
-        }
-      }
       formData.append(key, value);
     }
   });
@@ -622,14 +612,26 @@ useHead({
               </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
-              <div class="form-group-dark" :data-invalid-field="showValidationErrors && isFieldEmpty('birth_place') ? 'birth_place' : undefined">
-                <label class="label-dark">{{ t("verification-account.birthPlace") }}</label>
-                <input v-model="formInformation.birth_place" type="text" class="modern-input-dark" :class="{ 'border-red-500/60 ring-2 ring-red-500/30': showValidationErrors && isFieldEmpty('birth_place') }" />
-              </div>
-              <div class="form-group-dark" :data-invalid-field="showValidationErrors && isFieldEmpty('birth_date') ? 'birth_date' : undefined">
-                <label class="label-dark">{{ t("verification-account.birthDate") }}</label>
-                <input v-model="formInformation.birth_date" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" maxlength="10" @input="formatBirthDate" class="modern-input-dark font-mono" :class="{ 'border-red-500/60 ring-2 ring-red-500/30': showValidationErrors && isFieldEmpty('birth_date') }" />
+            <div class="form-group-dark" :data-invalid-field="showValidationErrors && isFieldEmpty('birth_place') ? 'birth_place' : undefined">
+              <label class="label-dark">{{ t("verification-account.birthPlace") }}</label>
+              <input v-model="formInformation.birth_place" type="text" class="modern-input-dark" :class="{ 'border-red-500/60 ring-2 ring-red-500/30': showValidationErrors && isFieldEmpty('birth_place') }" />
+            </div>
+
+            <div class="form-group-dark" :data-invalid-field="showValidationErrors && isFieldEmpty('birth_date') ? 'birth_date' : undefined">
+              <label class="label-dark">{{ t("verification-account.birthDate") }}</label>
+              <div class="grid grid-cols-3 gap-2">
+                <select v-model="birthDay" class="modern-select-dark" :class="{ 'border-red-500/60 ring-2 ring-red-500/30': showValidationErrors && !birthDay }">
+                  <option value="" disabled>Hari</option>
+                  <option v-for="d in dayOptions" :key="d" :value="d">{{ d }}</option>
+                </select>
+                <select v-model="birthMonth" class="modern-select-dark" :class="{ 'border-red-500/60 ring-2 ring-red-500/30': showValidationErrors && !birthMonth }">
+                  <option value="" disabled>Bulan</option>
+                  <option v-for="m in monthOptions" :key="m.value" :value="m.value">{{ m.label }}</option>
+                </select>
+                <select v-model="birthYear" class="modern-select-dark" :class="{ 'border-red-500/60 ring-2 ring-red-500/30': showValidationErrors && !birthYear }">
+                  <option value="" disabled>Tahun</option>
+                  <option v-for="y in yearOptions" :key="y" :value="y">{{ y }}</option>
+                </select>
               </div>
             </div>
 
@@ -774,6 +776,20 @@ useHead({
 .modern-input-dark {
   @apply w-full px-5 py-4 bg-white/[0.03] border border-white/10 rounded-2xl text-white text-sm outline-none transition-all
          focus:bg-white/[0.07] focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 placeholder:text-slate-600;
+}
+
+.modern-select-dark {
+  @apply w-full px-3 py-4 bg-white/[0.03] border border-white/10 rounded-2xl text-white text-sm outline-none transition-all appearance-none
+         focus:bg-white/[0.07] focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+.modern-select-dark option {
+  background: #1a1145;
+  color: white;
 }
 
 .gender-btn-active {
