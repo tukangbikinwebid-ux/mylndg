@@ -203,6 +203,41 @@ const handleFileChange = async (
   }
 };
 
+const formatBirthDate = () => {
+  let value = formInformation.value.birth_date.replace(/\D/g, "");
+
+  // Limit ke 8 digit (DDMMYYYY)
+  if (value.length > 8) value = value.slice(0, 8);
+
+  let formatted = "";
+  if (value.length > 0) {
+    // DD
+    let day = value.slice(0, 2);
+    if (day.length === 2) {
+      const d = parseInt(day, 10);
+      if (d > 31) day = "31";
+      if (d === 0) day = "01";
+    }
+    formatted += day;
+    if (value.length > 2) {
+      // MM
+      let month = value.slice(2, 4);
+      if (month.length === 2) {
+        const m = parseInt(month, 10);
+        if (m > 12) month = "12";
+        if (m === 0) month = "01";
+      }
+      formatted += "/" + month;
+      if (value.length > 4) {
+        // YYYY
+        formatted += "/" + value.slice(4, 8);
+      }
+    }
+  }
+
+  formInformation.value.birth_date = formatted;
+};
+
 const formatICNumber = () => {
   let value = formInformation.value.ktp_number.replace(/\D/g, "");
   let formattedValue = "";
@@ -249,9 +284,16 @@ const submitPersonalInformation = async () => {
 
   // Append data ke FormData
   Object.keys(formInformation.value).forEach((key) => {
-    const value =
+    let value =
       formInformation.value[key as keyof typeof formInformation.value];
     if (value !== null) {
+      // Konversi DD/MM/YYYY ke YYYY-MM-DD untuk API
+      if (key === "birth_date" && typeof value === "string") {
+        const parts = value.split("/");
+        if (parts.length === 3) {
+          value = `${parts[2]}-${parts[1]}-${parts[0]}`;
+        }
+      }
       formData.append(key, value);
     }
   });
@@ -279,7 +321,7 @@ const submitPersonalInformation = async () => {
         body: formData,
       }
     );
-
+ 
     const result = await response.json();
     
     if (!response.ok) {
@@ -587,7 +629,7 @@ useHead({
               </div>
               <div class="form-group-dark" :data-invalid-field="showValidationErrors && isFieldEmpty('birth_date') ? 'birth_date' : undefined">
                 <label class="label-dark">{{ t("verification-account.birthDate") }}</label>
-                <input v-model="formInformation.birth_date" type="date" class="modern-input-dark" :class="{ 'border-red-500/60 ring-2 ring-red-500/30': showValidationErrors && isFieldEmpty('birth_date') }" />
+                <input v-model="formInformation.birth_date" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" maxlength="10" @input="formatBirthDate" class="modern-input-dark font-mono" :class="{ 'border-red-500/60 ring-2 ring-red-500/30': showValidationErrors && isFieldEmpty('birth_date') }" />
               </div>
             </div>
 
