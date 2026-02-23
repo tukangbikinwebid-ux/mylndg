@@ -94,25 +94,112 @@ const scrollToFirstError = () => {
   });
 };
 
-const handleFileChange = (
+const compressImage = (file: File, maxSizeMB = 10): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    // Jika sudah dibawah limit, return langsung
+    if (file.size <= maxSizeMB * 1024 * 1024) {
+      resolve(file);
+      return;
+    }
+
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+
+      const canvas = document.createElement("canvas");
+      let { width, height } = img;
+
+      // Resize jika dimensi terlalu besar (max 2048px)
+      const MAX_DIM = 2048;
+      if (width > MAX_DIM || height > MAX_DIM) {
+        const ratio = Math.min(MAX_DIM / width, MAX_DIM / height);
+        width = Math.round(width * ratio);
+        height = Math.round(height * ratio);
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        reject(new Error("Canvas not supported"));
+        return;
+      }
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // Compress iteratif: mulai dari quality 0.8, turun sampai dibawah limit
+      let quality = 0.8;
+      const tryCompress = () => {
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              reject(new Error("Compression failed"));
+              return;
+            }
+            if (blob.size <= maxSizeMB * 1024 * 1024 || quality <= 0.1) {
+              const compressed = new File([blob], file.name, {
+                type: "image/jpeg",
+                lastModified: Date.now(),
+              });
+              resolve(compressed);
+            } else {
+              quality -= 0.1;
+              tryCompress();
+            }
+          },
+          "image/jpeg",
+          quality
+        );
+      };
+      tryCompress();
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("Failed to load image"));
+    };
+
+    img.src = url;
+  });
+};
+
+const handleFileChange = async (
   event: Event,
   field: keyof typeof formInformation.value
 ) => {
   const target = event.target as HTMLInputElement;
   const file = target.files?.[0];
   if (file) {
-    formInformation.value[field] = file;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      if (field === "front_ktp") {
-        previewKtpDepan.value = e.target?.result as string | null;
-      } else if (field === "back_ktp") {
-        previewKtpBelakang.value = e.target?.result as string | null;
-      } else if (field === "image") {
-        previewSelfie.value = e.target?.result as string | null;
-      }
-    };
-    reader.readAsDataURL(file);
+    try {
+      const compressed = await compressImage(file);
+      formInformation.value[field] = compressed;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (field === "front_ktp") {
+          previewKtpDepan.value = e.target?.result as string | null;
+        } else if (field === "back_ktp") {
+          previewKtpBelakang.value = e.target?.result as string | null;
+        } else if (field === "image") {
+          previewSelfie.value = e.target?.result as string | null;
+        }
+      };
+      reader.readAsDataURL(compressed);
+    } catch {
+      // Fallback: gunakan file asli jika compress gagal
+      formInformation.value[field] = file;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (field === "front_ktp") {
+          previewKtpDepan.value = e.target?.result as string | null;
+        } else if (field === "back_ktp") {
+          previewKtpBelakang.value = e.target?.result as string | null;
+        } else if (field === "image") {
+          previewSelfie.value = e.target?.result as string | null;
+        }
+      };
+      reader.readAsDataURL(file);
+    }
   }
 };
 
