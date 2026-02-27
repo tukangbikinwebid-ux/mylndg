@@ -20,7 +20,14 @@
       <div v-else-if="errorMessage" class="flex-1 flex items-center justify-center px-5">
         <div class="bg-red-500/10 border border-red-500/20 p-5 rounded-3xl text-red-400 text-center animate-enter w-full max-w-md">
           <i class="fa-solid fa-circle-exclamation mb-2 block text-2xl"></i>
-          <p class="text-sm">{{ errorMessage }}</p>
+          <p class="text-sm mb-4">{{ errorMessage }}</p>
+          <button
+            @click="initChat"
+            class="inline-flex items-center gap-2 bg-white/10 border border-white/10 text-white text-sm font-medium px-5 py-2.5 rounded-full hover:bg-white/15 transition-colors"
+          >
+            <i class="fa-solid fa-rotate-right"></i>
+            Cuba Semula
+          </button>
         </div>
       </div>
 
