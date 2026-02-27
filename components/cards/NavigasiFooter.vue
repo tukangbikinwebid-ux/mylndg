@@ -50,10 +50,10 @@
           <span v-if="activeMenu === 'chat'" class="absolute -top-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-400 rounded-full shadow-[0_0_8px_#60a5fa]"></span>
         </div>
         <span
-          class="text-[10px] uppercase tracking-widest font-bold"
+          class="text-[8px] uppercase tracking-wider font-bold text-center leading-tight max-w-[60px]"
           :class="activeMenu === 'chat' ? 'opacity-100' : 'opacity-70'"
         >
-          Perkhidmat Pelanggan
+          PERKHIDMAT<br>PELANGGAN
         </span>
       </NuxtLink>
 
@@ -71,7 +71,7 @@
           class="text-[10px] uppercase tracking-widest font-bold"
           :class="activeMenu === 'my-account' ? 'opacity-100' : 'opacity-70'"
         >
-          Profil
+          SAYA
         </span>
       </NuxtLink>
     </nav>
