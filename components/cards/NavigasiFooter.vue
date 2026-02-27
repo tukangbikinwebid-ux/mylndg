@@ -53,7 +53,7 @@
           class="text-[10px] uppercase tracking-widest font-bold"
           :class="activeMenu === 'chat' ? 'opacity-100' : 'opacity-70'"
         >
-          CS
+          Perkhidmat Pelanggan
         </span>
       </NuxtLink>
 
