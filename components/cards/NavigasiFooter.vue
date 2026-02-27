@@ -39,9 +39,27 @@
         </span>
       </NuxtLink>
 
-      <NuxtLink 
-        :to="t('nav-my-account')" 
-        @click="setActiveMenu('my-account')" 
+      <NuxtLink
+        :to="t('nav-chat')"
+        @click="setActiveMenu('chat')"
+        class="relative flex flex-col items-center justify-center flex-1 transition-all duration-300"
+        :class="activeMenu === 'chat' ? 'text-blue-400' : 'text-slate-500 hover:text-slate-300'"
+      >
+        <div class="relative py-1">
+          <i class="fa-solid fa-headset mb-1" style="font-size: 20px;"></i>
+          <span v-if="activeMenu === 'chat'" class="absolute -top-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-400 rounded-full shadow-[0_0_8px_#60a5fa]"></span>
+        </div>
+        <span
+          class="text-[10px] uppercase tracking-widest font-bold"
+          :class="activeMenu === 'chat' ? 'opacity-100' : 'opacity-70'"
+        >
+          CS
+        </span>
+      </NuxtLink>
+
+      <NuxtLink
+        :to="t('nav-my-account')"
+        @click="setActiveMenu('my-account')"
         class="relative flex flex-col items-center justify-center flex-1 transition-all duration-300"
         :class="activeMenu === 'my-account' ? 'text-blue-400' : 'text-slate-500 hover:text-slate-300'"
       >
@@ -49,7 +67,7 @@
           <i class="fa-solid fa-user mb-1" style="font-size: 20px;"></i>
           <span v-if="activeMenu === 'my-account'" class="absolute -top-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-400 rounded-full shadow-[0_0_8px_#60a5fa]"></span>
         </div>
-        <span 
+        <span
           class="text-[10px] uppercase tracking-widest font-bold"
           :class="activeMenu === 'my-account' ? 'opacity-100' : 'opacity-70'"
         >

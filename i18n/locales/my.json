@@ -1,6 +1,7 @@
 {
   "nav-home": "/my/",
   "nav-wallet": "/my/wallet",
+  "nav-chat": "/my/customer-service",
   "nav-my-account": "/my/my-account",
   "home": {
     "card": {
@@ -157,6 +158,20 @@
       "content-1": "Permohonan cepat dan proses pinjaman mudah",
       "content-2": "Receive money after only 30 minutes of making the application"
     }
+  },
+  "chat": {
+    "title": "Khidmat Pelanggan",
+    "placeholder": "Taip mesej...",
+    "send": "Hantar",
+    "loading": "Memuatkan perbualan...",
+    "empty": "Tiada mesej lagi. Mulakan perbualan!",
+    "error": "Gagal memuatkan perbualan.",
+    "session-expired": "Sesi tamat. Sila log masuk semula.",
+    "send-failed": "Gagal menghantar mesej.",
+    "remove-image": "Buang",
+    "today": "Hari ini",
+    "yesterday": "Semalam",
+    "closed": "Perbualan ini telah ditutup."
   },
   "verification-account": {
     "title-menu": "Pengesahan Identiti",
