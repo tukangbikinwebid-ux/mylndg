@@ -67,7 +67,6 @@ const changeLocale = (code: string) => {
 const validateForm = async (): Promise<boolean> => {
   errors.value = {};
   if (!form.value.name) errors.value.name = "Nama wajib diisi";
-  else if (/\s/.test(form.value.name)) errors.value.name = "Nama tidak boleh mengandungi ruang";
 
   if (!form.value.phone) {
     errors.value.phone = "Nombor telefon wajib diisi";
@@ -196,7 +195,6 @@ const submitForm = async () => {
               placeholder="Contoh: AhmadAli"
               class="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-blue-500/50 focus:bg-white/10 outline-none transition-all text-white placeholder:text-slate-600"
               :class="{ 'border-red-500/50 bg-red-500/5': errors.name }"
-              @input="stripSpaces('name')"
             />
             <p v-if="errors.name" class="text-red-400 text-xs mt-1.5 ml-1">{{ errors.name }}</p>
           </div>
