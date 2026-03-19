@@ -1,6 +1,7 @@
 {
   "nav-home": "/en/",
   "nav-wallet": "/en/wallet",
+  "nav-chat": "/en/customer-service",
   "nav-my-account": "/en/my-account",
   "home": {
     "card": {
@@ -157,6 +158,20 @@
       "content-1": "Fast application and easy loan process",
       "content-2": "Receive money only 30 minutes after making the application"
     }
+  },
+  "chat": {
+    "title": "Customer Service",
+    "placeholder": "Type a message...",
+    "send": "Send",
+    "loading": "Loading conversation...",
+    "empty": "No messages yet. Start the conversation!",
+    "error": "Failed to load conversation.",
+    "session-expired": "Session expired. Please log in again.",
+    "send-failed": "Failed to send message.",
+    "remove-image": "Remove",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "closed": "This conversation has been closed."
   },
   "verification-account": {
     "title-menu": "Identity Verification",
