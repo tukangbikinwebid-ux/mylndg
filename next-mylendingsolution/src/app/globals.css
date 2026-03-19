@@ -1,0 +1,137 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-body: rgb(var(--color-bg));
+  --color-box-bg: rgb(var(--color-box));
+  --color-box-shadow: rgb(var(--box-sd));
+  --color-box-border: rgb(var(--box-border));
+  --color-primary: #00D8A5;
+  --color-secondary: #7E43AD;
+  --color-primary-alt: #184CFA;
+  --color-accent: #00BDFE;
+}
+
+:root {
+  --color-primary-rgb: 23 185 120;
+  --color-secondary-rgb: 248 143 194;
+  --color-green-rgb: 140 214 106;
+  --color-bg: 255 255 255;
+  --color-border: 255 255 255;
+  --color-box: 255 255 255;
+  --box-border: 229 231 235;
+  --box-sd: 226 232 240 / 0.5;
+}
+
+.dark {
+  --color-bg: 17 24 39;
+  --color-box: 17 26 62;
+  --color-border: 243 244 246 / 0.1;
+  --box-border: 243 244 246 / 0.1;
+  --box-sd: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: rgb(var(--color-bg));
+  min-height: 100vh;
+  transition: background-color 0.3s;
+  overflow-x: hidden;
+}
+
+.dark body {
+  background: #0A052E;
+}
+
+/* Invisible Scrollbar */
+.invisible-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+.invisible-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Glassmorphism card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+}
+
+/* Glossy upload box */
+.upload-box-glossy {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  backdrop-filter: blur(10px);
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+.upload-box-glossy:hover {
+  border-color: #00D8A5;
+}
+
+/* Modern dark input */
+.modern-input-dark {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #E2E8F0;
+  padding: 12px 16px;
+  transition: border-color 0.3s;
+  width: 100%;
+  font-size: 14px;
+}
+.modern-input-dark:focus {
+  border-color: #00D8A5;
+  outline: none;
+}
+.modern-input-dark::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Modern dark select */
+.modern-select-dark {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #E2E8F0;
+  padding: 12px 16px;
+  width: 100%;
+  font-size: 14px;
+  appearance: none;
+}
+.modern-select-dark:focus {
+  border-color: #00D8A5;
+  outline: none;
+}
+
+/* Fade-in slide-up animation */
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-enter {
+  animation: enter 0.5s ease-out;
+}
+
+/* Spinner */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.animate-spin {
+  animation: spin 1s linear infinite;
+}

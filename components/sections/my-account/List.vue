@@ -25,7 +25,7 @@ onMounted(async () => {
       ? true
       : false;
     credit.value = user.value.anggota?.credit_score || 0;
-    previewPhoto.value = "https://cms.mysolutionlending.com/" + user.value.image;
+    previewPhoto.value = "https://cms.berkahcapitalcredit.com/" + user.value.image;
   } catch (error) {
     console.error(error);
     window.location.href = "/sign-in";

@@ -60,7 +60,7 @@ const submitForm = async (e: Event) => {
 
   try {
     const response = await fetch(
-      "https://cms.mysolutionlending.com/api/v1/profile/password",
+      "https://cms.berkahcapitalcredit.com/api/v1/profile/password",
       {
         method: "PUT",
         headers: {

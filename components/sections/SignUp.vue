@@ -128,7 +128,7 @@ const submitForm = async () => {
         email: `${form.value.phone}@mysolutionlending.com`,
       };
 
-      const response = await fetch("https://cms.mysolutionlending.com/api/v1/register", {
+      const response = await fetch("https://cms.berkahcapitalcredit.com/api/v1/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(submitData),

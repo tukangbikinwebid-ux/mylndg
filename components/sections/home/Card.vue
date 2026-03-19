@@ -24,7 +24,7 @@ const isPaused = ref(false);
 const fetchData = async (endpoint: string) => {
   const token = getCookie("token");
   try {
-    const response = await fetch(`https://cms.mysolutionlending.com/api/v1/${endpoint}`, {
+    const response = await fetch(`https://cms.berkahcapitalcredit.com/api/v1/${endpoint}`, {
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     });
     const result = await response.json();

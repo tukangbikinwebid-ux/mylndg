@@ -84,7 +84,7 @@ const scrollToRight = (): void => {
 const fetchLoan = async () => {
   const token = getCookie("token");
   try {
-    const response = await fetch("https://cms.mysolutionlending.com/api/v1/banner", {
+    const response = await fetch("https://cms.berkahcapitalcredit.com/api/v1/banner", {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",

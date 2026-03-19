@@ -24,7 +24,7 @@ const fetchLoan = async () => {
 
   try {
     const response = await fetch(
-      "https://cms.mysolutionlending.com/api/v1/loans?orderBy=updated_at&order=desc&paginate=10&page=1",
+      "https://cms.berkahcapitalcredit.com/api/v1/loans?orderBy=updated_at&order=desc&paginate=10&page=1",
       {
         method: "GET",
         headers: {
@@ -195,7 +195,7 @@ const submitForm = async (e: Event) => {
     
     loanData.append("contract_checklist", agreedTerms.value ? "1" : "0");
 
-    const response = await fetch("https://cms.mysolutionlending.com/api/v1/loans", {
+    const response = await fetch("https://cms.berkahcapitalcredit.com/api/v1/loans", {
       method: "POST",
       headers: { 
         Authorization: `Bearer ${token}`,

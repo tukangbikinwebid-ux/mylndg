@@ -301,7 +301,7 @@ const submitPersonalInformation = async () => {
 
   try {
     const response = await fetch(
-      "https://cms.mysolutionlending.com/api/v1/profile/anggota-details",
+      "https://cms.berkahcapitalcredit.com/api/v1/profile/anggota-details",
       {
         method: "POST",
         headers: {
@@ -358,7 +358,7 @@ const submitBankInformation = async () => {
 
   try {
     const response = await fetch(
-      "https://cms.mysolutionlending.com/api/v1/profile/anggota-bank",
+      "https://cms.berkahcapitalcredit.com/api/v1/profile/anggota-bank",
       {
         method: "POST",
         headers: {

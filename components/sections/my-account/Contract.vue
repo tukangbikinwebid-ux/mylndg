@@ -20,7 +20,7 @@ onMounted(async () => {
     withdraw.value = users?.value.anggota?.can_withdraw ?? 0;
 
     const response = await fetch(
-      "https://cms.mysolutionlending.com/api/v1/loans?orderBy=updated_at&order=desc&paginate=1&page=1",
+      "https://cms.berkahcapitalcredit.com/api/v1/loans?orderBy=updated_at&order=desc&paginate=1&page=1",
       {
         method: "GET",
         headers: {
